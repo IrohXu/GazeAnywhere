@@ -6,5 +6,5 @@ model = L(meta_arch.GazeModelMapper)()
 model.backbone = L(backbone.build_backbone)(
     name="small", out_attn=[2, 5, 8, 11]
 )
-model.criterion = L(criterion.GazeModelCriterion)()
+model.criterion = L(criterion.GazeMapperCriterion)()
 model.device = "cuda"

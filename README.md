@@ -42,6 +42,33 @@ You should prepare GazeFollow and GestureTarget for training.
 
 TODO
 
+```
+python tools/eval_on_gazefollow.py --config_file ./configs/gazefollow_gaze_vit_large.py --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/checkpoints/dinov2_gaze_vit_large.pth --use_dark_inference
+```
+
+## Deployment
+Go to path `./fastapi`
+Check your GPU server IP
+```
+ip addr show
+```
+
+## Launch Child Head Detection Model
+#### Debug and ru-load mode:    
+```
+uvicorn owlv2_api:app --host 172.29.130.184 --port 8001 --reload --log-level debug
+```
+
+#### Normal mode:    
+```
+uvicorn owlv2_api:app --host 172.29.130.184 --port 8001
+```
+
+## Launch Gaze Detection Model  
+```
+uvicorn gazemodel_api:app --host 172.29.130.184 --port 8002
+```
+
 ## Reference
 
 TODO

@@ -1,1 +1,1 @@
-from .gaze_modeling_mapper import GazeModelingMapper
+from .gaze_modeling_mapper import GazeModelMapper

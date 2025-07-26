@@ -192,3 +192,9 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+tmp/
+tmp2/
+checkpoints/
+output_video.mp4
+pretrained/

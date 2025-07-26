@@ -148,6 +148,48 @@ class GazeModelMapper(nn.Module):
                 
         return heatmap_preds, inout_preds.sigmoid()
         # return heatmap_preds, inout_preds.sigmoid()
+    
+    def inference(self, x, heads):
+        embedded_heads = torchvision.transforms.functional.resize(heads, (self.mask_size, self.mask_size))
+        embedded_heads = torch.where(embedded_heads > 0, 1., 0.)
+                
+        # Get out-dict
+        x = self.backbone(
+            x,
+            None,
+            None,
+        )
+        
+        # Apply patch weights to get the final feats and attention maps
+        feats = x.get("last_feat", None)
+        feats = self.linear(feats)
+        feats = feats + self.pos_embed
+
+        # head_map_embeddings = embedded_heads.unsqueeze(dim=1) * self.head_token.weight.unsqueeze(-1).unsqueeze(-1)
+        head_map_embeddings = embedded_heads * self.head_token.weight.unsqueeze(-1).unsqueeze(-1)
+        feats = feats + head_map_embeddings
+        feats = feats.flatten(start_dim=2).permute(0, 2, 1) # "b c h w -> b (h w) c"
+        
+        if self.inout:
+            feats = torch.cat([self.inout_token.weight.unsqueeze(dim=0).repeat(feats.shape[0], 1, 1), feats], dim=1)
+
+        feats = self.transformer(feats)
+        
+        if self.inout:
+            inout_tokens = feats[:, 0, :] 
+            inout_preds = self.inout_head(inout_tokens).squeeze(dim=-1)
+            # inout_preds = utils.split_tensors(inout_preds, num_ppl_per_img)
+            feats = feats[:, 1:, :] # slice off inout tokens from scene tokens
+        
+        feats = feats.reshape(feats.shape[0], self.mask_size, self.mask_size, feats.shape[2]).permute(0, 3, 1, 2) # b (h w) c -> b c h w        
+        feats = self.heatmap_head(feats)
+        
+        # feats = self.heatmap_head(feats).squeeze(dim=1)
+        feats = torchvision.transforms.functional.resize(feats, self.out_size)
+        heatmap_preds = feats
+            
+        # Inference
+        return heatmap_preds, inout_preds.sigmoid()
 
     def preprocess_inputs(self, batched_inputs: Dict[str, torch.Tensor]):
         return (
