@@ -8,6 +8,7 @@ head_detection_result = requests.post(
     verify=False
 )
 
+print(head_detection_result.json())
 
 gaze_result = requests.post(
     "http://172.29.130.184:8002/gaze/",
@@ -19,4 +20,4 @@ gaze_result = requests.post(
     verify=False
 )
 
-breakpoint()
+print(gaze_result.json())
