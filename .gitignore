@@ -193,8 +193,8 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
-tmp/
-tmp2/
 checkpoints/
-output_video.mp4
+output/
 pretrained/
+pre_annotation/
+*.mp4

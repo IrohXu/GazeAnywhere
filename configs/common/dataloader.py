@@ -9,7 +9,7 @@ from torch.utils.data.distributed import DistributedSampler
 
 from data import *
 
-DATA_ROOT = "/projects/illinois/eng/cs/jrehg/users/xucao2/neurips25"
+DATA_ROOT = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze"
 # DATA_ROOT = "${Root to Datasets}"
 if DATA_ROOT == "${Root to Datasets}":
     raise Exception(
@@ -36,50 +36,61 @@ The directory structure should be:
 
 # Basic Config for Video Attention Target dataset and preprocessing
 data_info = OmegaConf.create()
-data_info.video_attention_target = OmegaConf.create()
-data_info.video_attention_target.train_root = osp.join(
-    DATA_ROOT, "videoattentiontarget/images"
-)
-data_info.video_attention_target.train_anno = osp.join(
-    DATA_ROOT, "videoattentiontarget/annotations/train"
-)
-data_info.video_attention_target.val_root = osp.join(
-    DATA_ROOT, "videoattentiontarget/images"
-)
-data_info.video_attention_target.val_anno = osp.join(
-    DATA_ROOT, "videoattentiontarget/annotations/test"
-)
-data_info.video_attention_target.head_root = osp.join(
-    DATA_ROOT, "videoattentiontarget/head_masks/images"
-)
+# data_info.video_attention_target = OmegaConf.create()
+# data_info.video_attention_target.train_root = osp.join(
+#     DATA_ROOT, "videoattentiontarget/images"
+# )
+# data_info.video_attention_target.train_anno = osp.join(
+#     DATA_ROOT, "videoattentiontarget/annotations/train"
+# )
+# data_info.video_attention_target.val_root = osp.join(
+#     DATA_ROOT, "videoattentiontarget/images"
+# )
+# data_info.video_attention_target.val_anno = osp.join(
+#     DATA_ROOT, "videoattentiontarget/annotations/test"
+# )
+# data_info.video_attention_target.head_root = osp.join(
+#     DATA_ROOT, "videoattentiontarget/head_masks/images"
+# )
 
-data_info.video_attention_target_video = OmegaConf.create()
-data_info.video_attention_target_video.train_root = osp.join(
-    DATA_ROOT, "videoattentiontarget/images"
-)
-data_info.video_attention_target_video.train_anno = osp.join(
-    DATA_ROOT, "videoattentiontarget/annotations/train"
-)
-data_info.video_attention_target_video.val_root = osp.join(
-    DATA_ROOT, "videoattentiontarget/images"
-)
-data_info.video_attention_target_video.val_anno = osp.join(
-    DATA_ROOT, "videoattentiontarget/annotations/test"
-)
-data_info.video_attention_target_video.head_root = osp.join(
-    DATA_ROOT, "videoattentiontarget/head_masks/images"
-)
+# data_info.video_attention_target_video = OmegaConf.create()
+# data_info.video_attention_target_video.train_root = osp.join(
+#     DATA_ROOT, "videoattentiontarget/images"
+# )
+# data_info.video_attention_target_video.train_anno = osp.join(
+#     DATA_ROOT, "videoattentiontarget/annotations/train"
+# )
+# data_info.video_attention_target_video.val_root = osp.join(
+#     DATA_ROOT, "videoattentiontarget/images"
+# )
+# data_info.video_attention_target_video.val_anno = osp.join(
+#     DATA_ROOT, "videoattentiontarget/annotations/test"
+# )
+# data_info.video_attention_target_video.head_root = osp.join(
+#     DATA_ROOT, "videoattentiontarget/head_masks/images"
+# )
+
+# data_info.gazefollow = OmegaConf.create()
+# data_info.gazefollow.train_root = osp.join(DATA_ROOT, "gazefollow")
+# data_info.gazefollow.train_anno = osp.join(
+#     DATA_ROOT, "gazefollow/train_annotations_release.txt"
+# )
+# data_info.gazefollow.val_root = osp.join(DATA_ROOT, "gazefollow")
+# data_info.gazefollow.val_anno = osp.join(
+#     DATA_ROOT, "gazefollow/test_annotations_release.txt"
+# )
+# data_info.gazefollow.head_root = osp.join(DATA_ROOT, "gazefollow/head_masks")
 
 data_info.gazefollow = OmegaConf.create()
-data_info.gazefollow.train_root = osp.join(DATA_ROOT, "gazefollow")
+data_info.gazefollow.train_root = osp.join(DATA_ROOT)
 data_info.gazefollow.train_anno = osp.join(
-    DATA_ROOT, "gazefollow/train_annotations_release.txt"
+    DATA_ROOT, "train_annotations_release.txt"
 )
-data_info.gazefollow.val_root = osp.join(DATA_ROOT, "gazefollow")
+data_info.gazefollow.val_root = osp.join(DATA_ROOT)
 data_info.gazefollow.val_anno = osp.join(
-    DATA_ROOT, "gazefollow/test_annotations_release.txt"
+    DATA_ROOT, "test_annotations_release.txt"
 )
-data_info.gazefollow.head_root = osp.join(DATA_ROOT, "gazefollow/head_masks")
+data_info.gazefollow.head_root = osp.join(DATA_ROOT, "head_masks")
 
 data_info.input_size = 224
 data_info.output_size = 64

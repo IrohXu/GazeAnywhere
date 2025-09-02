@@ -73,6 +73,24 @@ uvicorn gazemodel_api:app --host 172.29.130.184 --port 8002
 python test.py
 ```
 
+## Evaluation
+
+```
+python tools/eval_on_gazefollow.py --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/gazefollow_gaze_vit_base.py --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/checkpoints/dinov2_gaze_vit_base.pth --use_dark_inference
+```
+
+```
+python tools/visualize_on_gazefollow.py --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/gazefollow_gaze_vit_small.py --output_path /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/childgaze_gaze_vit_small/model_0003935.pth --use_dark_inference
+```
+
+```
+python tools/convert_visualization_to_video.py --input /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization/data/PWC007_2019_02_23_T1_panasonic_ESCS_merged_12129_15508 --output /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization/video/PWC007_2019_02_23_T1_panasonic_ESCS_merged_12129_15508.mp4 
+```
+
+```
+/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization_pre/visualization/data/PWC007_2019_02_23_T1_panasonic_ESCS_merged_12129_15508
+```
+
 ## Reference
 
 TODO

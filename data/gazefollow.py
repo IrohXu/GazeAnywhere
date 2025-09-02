@@ -163,7 +163,7 @@ class GazeFollow(Dataset):
                 gaze_x = row["gaze_x"]
                 gaze_y = row["gaze_y"]
                 cont_gaze.append(
-                    [gaze_x, gaze_y]
+                    [float(gaze_x), float(gaze_y)]
                 )  # all ground truth gaze are stacked up
             for _ in range(len(cont_gaze), 20):
                 cont_gaze.append(
@@ -289,6 +289,7 @@ class GazeFollow(Dataset):
                 "gaze_inouts": torch.FloatTensor([gaze_inside]),
                 "head_masks": head_mask,
                 "imsize": imsize,
+                "image_path": path,
             }
 
     def __len__(self):
