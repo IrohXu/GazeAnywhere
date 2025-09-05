@@ -73,7 +73,7 @@ def do_test(cfg, model, use_dark_inference=False):
                 )
                 auc_score = auc(scaled_heatmap, multi_hot)
                 AUC.append(auc_score)
-                # min distance: minimum among all possible pairs of <ground truth point, predicted point>
+                # min distance: minimum among all possible pairs of < ground truth point, predicted point >
                 all_distances = []
                 for gt_gaze in valid_gaze:
                     all_distances.append(L2_dist(gt_gaze, norm_p))

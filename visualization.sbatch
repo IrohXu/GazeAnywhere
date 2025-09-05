@@ -20,7 +20,7 @@ python=/projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/envs/smolagent/bi
 nvidia-smi
 
 python tools/visualize_on_gazefollow.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/gazefollow_gaze_vit_small.py \
-  --output_path /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization_pre \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/checkpoints/dinov2_gaze_vit_small.pth \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/childgaze_gaze_vit_large.py \
+  --output_path /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization_large \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/childgaze_gaze_vit_large/model_final.pth \
   --use_dark_inference

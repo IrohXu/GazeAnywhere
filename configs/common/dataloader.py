@@ -9,7 +9,8 @@ from torch.utils.data.distributed import DistributedSampler
 
 from data import *
 
-DATA_ROOT = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze"
+# DATA_ROOT = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze"
+DATA_ROOT = "/projects/illinois/eng/cs/jrehg/users/xucao2/neurips25/gazefollow"
 # DATA_ROOT = "${Root to Datasets}"
 if DATA_ROOT == "${Root to Datasets}":
     raise Exception(

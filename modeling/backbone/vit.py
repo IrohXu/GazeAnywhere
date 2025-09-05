@@ -534,6 +534,7 @@ def build_backbone(
         "dinov2_giant": dinov2_giant,
         "dinov2_large": dinov2_large,
         "dinov2_base": dinov2_base,
-        "dinov2_small": dinov2_small
+        "dinov2_small": dinov2_small,
     }
     return vit_dict[name](**kwargs)
+

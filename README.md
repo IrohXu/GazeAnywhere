@@ -94,3 +94,10 @@ python tools/convert_visualization_to_video.py --input /projects/illinois/eng/cs
 ## Reference
 
 TODO
+
+
+## DINOv3
+
+```
+python -u tools/train.py --config-file ./configs/gazefollow_gaze_dinov3_small.py --num-gpu 1
+```

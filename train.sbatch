@@ -7,7 +7,7 @@
 #SBATCH --partition=HCESC-H200-normal
 #SBATCH --gres=gpu:1
 #SBATCH --mem=128g
-#SBATCH --output=./train_dinov2_large.log
+#SBATCH --output=./train_gazefollow_dinov3_small.log
 
 source /projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/etc/profile.d/conda.sh
 export PATH=/projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/bin:$PATH
@@ -20,5 +20,5 @@ python=/projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/envs/smolagent/bi
 nvidia-smi
 
 python -u tools/train.py \
-  --config-file ./configs/childgaze_gaze_vit_large.py \
+  --config-file ./configs/gazefollow_gaze_dinov3_small.py \
   --num-gpu 1
