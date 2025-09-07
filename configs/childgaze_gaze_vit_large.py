@@ -13,6 +13,12 @@ len_dataset = 126000
 num_epoch = 5
 # dataloader
 dataloader = dataloader.gazefollow
+dataloader.train.train_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze"
+dataloader.val.val_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze"
+dataloader.train.train_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/train_annotations_release.txt"
+dataloader.val.val_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/test_annotations_release.txt"
+dataloader.train.head_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/head_masks"
+dataloader.val.head_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/head_masks"
 dataloader.train.batch_size = ins_per_iter // num_gpu
 dataloader.train.num_workers = dataloader.val.num_workers = 14
 dataloader.train.distributed = num_gpu > 1

@@ -38,7 +38,7 @@ def print_model_size(model: torch.nn.Module, verbose: bool = False) -> None:
 def do_test(cfg, model, visualization_dir, use_dark_inference=False):
     val_loader = instantiate(cfg.dataloader.val)
     
-    gaze_threshold = 0.1
+    gaze_threshold = 0.3
 
     model.train(False)
     AUC = []

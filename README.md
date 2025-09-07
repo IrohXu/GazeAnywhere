@@ -84,7 +84,7 @@ python tools/visualize_on_gazefollow.py --config_file /projects/illinois/eng/cs/
 ```
 
 ```
-python tools/convert_visualization_to_video.py --input /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization/data/PWC007_2019_02_23_T1_panasonic_ESCS_merged_12129_15508 --output /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization/video/PWC007_2019_02_23_T1_panasonic_ESCS_merged_12129_15508.mp4 
+python tools/convert_visualization_to_video.py --input /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization_large/visualization/data/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116 --output /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/video_output/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116.mp4
 ```
 
 ```
