@@ -7,7 +7,7 @@
 #SBATCH --partition=HCESC-H200-normal
 #SBATCH --gres=gpu:1
 #SBATCH --mem=128g
-#SBATCH --output=./evaluation.log
+#SBATCH --output=./evaluation_dinov3_base_videoattentiontarget.log
 
 source /projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/etc/profile.d/conda.sh
 export PATH=/projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/bin:$PATH
@@ -19,7 +19,7 @@ python=/projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/envs/smolagent/bi
 
 nvidia-smi
 
-python tools/eval_on_gazefollow.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/gazefollow_gaze_vit_small.py \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/checkpoints/dinov2_gaze_vit_small.pth \
+python tools/eval_on_video_attention_target.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/videoattentiontarget_gaze_dinov3_base.py \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/all_gaze_dinov3_base/model_final.pth \
   --use_dark_inference

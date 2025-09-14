@@ -12,7 +12,7 @@ from .masking import MaskGenerator
 from . import data_utils as utils
 
 
-class GazeFollow(Dataset):
+class GazeDataset(Dataset):
     def __init__(
         self,
         image_root: str,
@@ -35,12 +35,6 @@ class GazeFollow(Dataset):
             column_names = [
                 "path",
                 "idx",
-                "body_bbox_x",
-                "body_bbox_y",
-                "body_bbox_w",
-                "body_bbox_h",
-                "eye_x",
-                "eye_y",
                 "gaze_x",
                 "gaze_y",
                 "head_x_min",
@@ -48,6 +42,7 @@ class GazeFollow(Dataset):
                 "head_x_max",
                 "head_y_max",
                 "inout",
+                "source",
                 "meta0",
                 "meta1",
             ]
@@ -58,6 +53,8 @@ class GazeFollow(Dataset):
                 index_col=False,
                 encoding="utf-8-sig",
             )
+            df = df.sample(frac=1).reset_index(drop=True)  # shuffle the data
+            
             df = df[
                 df["inout"] != -1
             ]  # only use "in" or "out "gaze. (-1 is invalid, 0 is out gaze)
@@ -68,8 +65,6 @@ class GazeFollow(Dataset):
                     "head_y_min",
                     "head_x_max",
                     "head_y_max",
-                    "eye_x",
-                    "eye_y",
                     "gaze_x",
                     "gaze_y",
                     "inout",
@@ -81,12 +76,6 @@ class GazeFollow(Dataset):
             column_names = [
                 "path",
                 "idx",
-                "body_bbox_x",
-                "body_bbox_y",
-                "body_bbox_w",
-                "body_bbox_h",
-                "eye_x",
-                "eye_y",
                 "gaze_x",
                 "gaze_y",
                 "head_x_min",
@@ -106,8 +95,6 @@ class GazeFollow(Dataset):
             df = df[
                 [
                     "path",
-                    "eye_x",
-                    "eye_y",
                     "gaze_x",
                     "gaze_y",
                     "head_x_min",
@@ -115,7 +102,7 @@ class GazeFollow(Dataset):
                     "head_x_max",
                     "head_y_max",
                 ]
-            ].groupby(["path", "eye_x"])
+            ].groupby(["path", "head_x_min"])
             self.keys = list(df.groups.keys())
             self.X_test = df
             self.length = len(self.keys)
@@ -156,8 +143,6 @@ class GazeFollow(Dataset):
                 y_min = row["head_y_min"]
                 x_max = row["head_x_max"]
                 y_max = row["head_y_max"]
-                eye_x = row["eye_x"]
-                eye_y = row["eye_y"]
                 gaze_x = row["gaze_x"]
                 gaze_y = row["gaze_y"]
                 cont_gaze.append(
@@ -176,8 +161,6 @@ class GazeFollow(Dataset):
                 y_min,
                 x_max,
                 y_max,
-                eye_x,
-                eye_y,
                 gaze_x,
                 gaze_y,
                 inout,
@@ -268,6 +251,7 @@ class GazeFollow(Dataset):
                 "gazes": torch.FloatTensor([gaze_x, gaze_y]),
                 "gaze_inouts": torch.FloatTensor([gaze_inside]),
                 "imsize": imsize,
+                "image_path": path,
             }
             if self.mask_generator is not None:
                 out_dict["image_masks"] = image_mask

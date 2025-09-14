@@ -10,34 +10,34 @@ from torch.utils.data.distributed import DistributedSampler
 from data import *
 
 # DATA_ROOT = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze"
-DATA_ROOT = "/projects/illinois/eng/cs/jrehg/users/xucao2/neurips25/gazefollow"
-# DATA_ROOT = "${Root to Datasets}"
-if DATA_ROOT == "${Root to Datasets}":
-    raise Exception(
-        f"""{osp.abspath(__file__)}: Rewrite `DATA_ROOT` with the root to the datasets.
-The directory structure should be:
--DATA_ROOT
-|-videoattentiontarget
-|--images
-|--annotations
-|---train
-|---test
-|--head_masks
-|---images
-|-gazefollow
-|--train
-|--test2
-|--train_annotations_release.txt
-|--test_annotations_release.txt
-|--head_masks
-|---train
-|---test2
-"""
-    )
+# DATA_ROOT = "/projects/illinois/eng/cs/jrehg/users/xucao2/neurips25/gazefollow"
+# # DATA_ROOT = "${Root to Datasets}"
+# if DATA_ROOT == "${Root to Datasets}":
+#     raise Exception(
+#         f"""{osp.abspath(__file__)}: Rewrite `DATA_ROOT` with the root to the datasets.
+# The directory structure should be:
+# -DATA_ROOT
+# |-videoattentiontarget
+# |--images
+# |--annotations
+# |---train
+# |---test
+# |--head_masks
+# |---images
+# |-gazefollow
+# |--train
+# |--test2
+# |--train_annotations_release.txt
+# |--test_annotations_release.txt
+# |--head_masks
+# |---train
+# |---test2
+# """
+#     )
 
 # Basic Config for Video Attention Target dataset and preprocessing
 data_info = OmegaConf.create()
-# data_info.video_attention_target = OmegaConf.create()
+data_info.video_attention_target = OmegaConf.create()
 # data_info.video_attention_target.train_root = osp.join(
 #     DATA_ROOT, "videoattentiontarget/images"
 # )
@@ -54,7 +54,7 @@ data_info = OmegaConf.create()
 #     DATA_ROOT, "videoattentiontarget/head_masks/images"
 # )
 
-# data_info.video_attention_target_video = OmegaConf.create()
+data_info.video_attention_target_video = OmegaConf.create()
 # data_info.video_attention_target_video.train_root = osp.join(
 #     DATA_ROOT, "videoattentiontarget/images"
 # )
@@ -71,7 +71,7 @@ data_info = OmegaConf.create()
 #     DATA_ROOT, "videoattentiontarget/head_masks/images"
 # )
 
-# data_info.gazefollow = OmegaConf.create()
+data_info.gazefollow = OmegaConf.create()
 # data_info.gazefollow.train_root = osp.join(DATA_ROOT, "gazefollow")
 # data_info.gazefollow.train_anno = osp.join(
 #     DATA_ROOT, "gazefollow/train_annotations_release.txt"
@@ -82,16 +82,18 @@ data_info = OmegaConf.create()
 # )
 # data_info.gazefollow.head_root = osp.join(DATA_ROOT, "gazefollow/head_masks")
 
-data_info.gazefollow = OmegaConf.create()
-data_info.gazefollow.train_root = osp.join(DATA_ROOT)
-data_info.gazefollow.train_anno = osp.join(
-    DATA_ROOT, "train_annotations_release.txt"
-)
-data_info.gazefollow.val_root = osp.join(DATA_ROOT)
-data_info.gazefollow.val_anno = osp.join(
-    DATA_ROOT, "test_annotations_release.txt"
-)
-data_info.gazefollow.head_root = osp.join(DATA_ROOT, "head_masks")
+# data_info.gazefollow = OmegaConf.create()
+# data_info.gazefollow.train_root = osp.join(DATA_ROOT)
+# data_info.gazefollow.train_anno = osp.join(
+#     DATA_ROOT, "train_annotations_release.txt"
+# )
+# data_info.gazefollow.val_root = osp.join(DATA_ROOT)
+# data_info.gazefollow.val_anno = osp.join(
+#     DATA_ROOT, "test_annotations_release.txt"
+# )
+# data_info.gazefollow.head_root = osp.join(DATA_ROOT, "head_masks")
+
+data_info.gaze_dataset = OmegaConf.create()
 
 data_info.input_size = 224
 data_info.output_size = 64
@@ -119,7 +121,7 @@ data_info.max_len = 32
 # Dataloader(gazefollow/video_atention_target, train/val)
 def __build_dataloader(
     name: Literal[
-        "gazefollow", "video_attention_target", "video_attention_target_video"
+        "gazefollow", "video_attention_target", "video_attention_target_video", "gaze_dataset"
     ],
     is_train: bool,
     batch_size: int = 64,
@@ -134,7 +136,8 @@ def __build_dataloader(
         "gazefollow",
         "video_attention_target",
         "video_attention_target_video",
-    ], f'{name} not in ("gazefollow", "video_attention_target", "video_attention_target_video")'
+        "gaze_dataset"
+    ], f'{name} not in ("gazefollow", "video_attention_target", "video_attention_target_video", "gaze_dataset")'
 
     for k, v in kwargs.items():
         if k in ["train_root", "train_anno", "val_root", "val_anno", "head_root"]:
@@ -144,13 +147,14 @@ def __build_dataloader(
 
     datasets = {
         "gazefollow": GazeFollow,
-        # "video_attention_target": VideoAttentionTarget,
-        # "video_attention_target_video": VideoAttentionTargetVideo,
+        "video_attention_target": VideoAttentionTarget,
+        "video_attention_target_video": VideoAttentionTargetVideo,
+        "gaze_dataset": GazeDataset,
     }
     dataset = L(datasets[name])(
         image_root=data_info[name]["train_root" if is_train else "val_root"],
         anno_root=data_info[name]["train_anno" if is_train else "val_anno"],
-        head_root=data_info[name]["head_root"],
+        # head_root=data_info[name]["head_root"],
         transform=get_transform(
             input_resolution=data_info.input_size,
             mean=data_info.mean,
@@ -222,5 +226,14 @@ dataloader.video_attention_target_video.train = L(__build_dataloader)(
 )
 dataloader.video_attention_target_video.val = L(__build_dataloader)(
     name="video_attention_target_video",
+    is_train=False,
+)
+dataloader.gaze_dataset = OmegaConf.create()
+dataloader.gaze_dataset.train = L(__build_dataloader)(
+    name="gaze_dataset",
+    is_train=True,
+)
+dataloader.gaze_dataset.val = L(__build_dataloader)(
+    name="gaze_dataset",
     is_train=False,
 )

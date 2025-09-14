@@ -94,7 +94,6 @@ class GazeModelMapper(nn.Module):
             heads,
             gt_heatmaps,
             gt_inouts,
-            head_masks,
             image_masks,
         ) = self.preprocess_inputs(x)
         # Calculate patch weights based on head position
@@ -200,9 +199,6 @@ class GazeModelMapper(nn.Module):
             else None,
             batched_inputs["gaze_inouts"].to(self.device)
             if "gaze_inouts" in batched_inputs.keys()
-            else None,
-            batched_inputs["head_masks"].to(self.device)
-            if "head_masks" in batched_inputs.keys()
             else None,
             batched_inputs["image_masks"].to(self.device)
             if "image_masks" in batched_inputs.keys()

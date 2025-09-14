@@ -9,8 +9,8 @@ from detectron2.config import LazyCall as L
 
 num_gpu = device_count()
 ins_per_iter = 128
-len_dataset = 126000
-num_epoch = 14
+len_dataset = 4400
+num_epoch = 30
 
 model = L(meta_arch.GazeModelMapper)()
 model.backbone = L(backbone.build_backbone_dinov3)(
@@ -29,13 +29,12 @@ model.inout = True
 model.patch_size = 16
 
 # dataloader
-dataloader = dataloader.gazefollow
-dataloader.train.train_root = "/projects/illinois/eng/cs/jrehg/users/xucao2/neurips25/gazefollow"
-dataloader.val.val_root = "/projects/illinois/eng/cs/jrehg/users/xucao2/neurips25/gazefollow"
-dataloader.train.train_anno = "/projects/illinois/eng/cs/jrehg/users/xucao2/neurips25/gazefollow/train_annotations_release.txt"
-dataloader.val.val_anno = "/projects/illinois/eng/cs/jrehg/users/xucao2/neurips25/gazefollow/test_annotations_release.txt"
-dataloader.train.head_root = "/projects/illinois/eng/cs/jrehg/users/xucao2/neurips25/gazefollow/head_masks"
-dataloader.val.head_root = "/projects/illinois/eng/cs/jrehg/users/xucao2/neurips25/gazefollow/head_masks"
+dataloader = dataloader.video_attention_target
+dataloader.train.train_root = "/projects/illinois/eng/cs/jrehg/users/xucao2/neurips25/videoattentiontarget/images"
+dataloader.val.val_root = "/projects/illinois/eng/cs/jrehg/users/xucao2/neurips25/videoattentiontarget/images"
+dataloader.train.train_anno = "/projects/illinois/eng/cs/jrehg/users/xucao2/neurips25/videoattentiontarget/annotations/train"
+dataloader.val.val_anno = "/projects/illinois/eng/cs/jrehg/users/xucao2/neurips25/videoattentiontarget/annotations/test"
+
 dataloader.train.batch_size = ins_per_iter // num_gpu
 dataloader.train.num_workers = dataloader.val.num_workers = 14
 dataloader.train.distributed = num_gpu > 1
@@ -49,15 +48,15 @@ dataloader.train.max_scene_patches_ratio = 0.5
 dataloader.val.batch_size = 32
 dataloader.val.distributed = False
 # train
-train.init_checkpoint = "pretrained/dinov3_vitl16_pretrain.pth"
+train.init_checkpoint = "/projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/gazefollow_gaze_dinov3_large/model_final.pth"
 train.output_dir = join("./output", basename(__file__).split(".")[0])
 train.max_iter = len_dataset * num_epoch // ins_per_iter
-train.log_period = len_dataset // (ins_per_iter * 100)
+train.log_period = len_dataset // (ins_per_iter * 10)
 train.checkpointer.max_to_keep = 10
 train.checkpointer.period = len_dataset // ins_per_iter
 train.seed = 0
 # optimizer
-optimizer.lr = 1e-3
+optimizer.lr = 1e-4
 optimizer.betas = (0.9, 0.99)
 lr_multiplier.scheduler.typ = "cosine"
 lr_multiplier.scheduler.start_value = 1

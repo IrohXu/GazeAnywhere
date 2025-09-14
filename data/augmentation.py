@@ -15,7 +15,6 @@ class Augmentation:
         image: Image,
         bbox: Tuple[float],
         gaze: Tuple[float],
-        head_mask: Image,
         size: Tuple[int],
     ):
         raise NotImplementedError
@@ -25,12 +24,11 @@ class Augmentation:
         image: Image,
         bbox: Tuple[float],
         gaze: Tuple[float],
-        head_mask: Image,
         size: Tuple[int],
     ):
         if np.random.random_sample() < self.p:
-            return self.transform(image, bbox, gaze, head_mask, size)
-        return image, bbox, gaze, head_mask, size
+            return self.transform(image, bbox, gaze, size)
+        return image, bbox, gaze, size
 
 
 class AugmentationList:
@@ -42,12 +40,11 @@ class AugmentationList:
         image: Image,
         bbox: Tuple[float],
         gaze: Tuple[float],
-        head_mask: Image,
         size: Tuple[int],
     ):
         for aug in self.augmentations:
-            image, bbox, gaze, head_mask, size = aug(image, bbox, gaze, head_mask, size)
-        return image, bbox, gaze, head_mask, size
+            image, bbox, gaze, size = aug(image, bbox, gaze, size)
+        return image, bbox, gaze, size
 
 
 class BoxJitter(Augmentation):
@@ -61,7 +58,6 @@ class BoxJitter(Augmentation):
         image: Image,
         bbox: Tuple[float],
         gaze: Tuple[float],
-        head_mask: Image,
         size: Tuple[int],
     ):
         x_min, y_min, x_max, y_max = bbox
@@ -71,7 +67,7 @@ class BoxJitter(Augmentation):
         y_min = np.clip(y_min - k * abs(y_max - y_min), 0, height - 1)
         x_max = np.clip(x_max + k * abs(x_max - x_min), 0, width - 1)
         y_max = np.clip(y_max + k * abs(y_max - y_min), 0, height - 1)
-        return image, (x_min, y_min, x_max, y_max), gaze, head_mask, size
+        return image, (x_min, y_min, x_max, y_max), gaze, size
 
 
 class RandomCrop(Augmentation):
@@ -83,7 +79,6 @@ class RandomCrop(Augmentation):
         image: Image,
         bbox: Tuple[float],
         gaze: Tuple[float],
-        head_mask: Image,
         size: Tuple[int],
     ):
         x_min, y_min, x_max, y_max = bbox
@@ -116,7 +111,6 @@ class RandomCrop(Augmentation):
 
         # Crop it
         image = TF.crop(image, crop_y_min, crop_x_min, crop_height, crop_width)
-        head_mask = TF.crop(head_mask, crop_y_min, crop_x_min, crop_height, crop_width)
 
         # convert coordinates into the cropped frame
         x_min, y_min, x_max, y_max = (
@@ -133,7 +127,6 @@ class RandomCrop(Augmentation):
             image,
             (x_min, y_min, x_max, y_max),
             (gaze_x, gaze_y),
-            head_mask,
             (crop_width, crop_height),
         )
 
@@ -147,15 +140,13 @@ class RandomFlip(Augmentation):
         image: Image,
         bbox: Tuple[float],
         gaze: Tuple[float],
-        head_mask: Image,
         size: Tuple[int],
     ):
         image = image.transpose(Image.FLIP_LEFT_RIGHT)
-        head_mask = head_mask.transpose(Image.FLIP_LEFT_RIGHT)
         x_min, y_min, x_max, y_max = bbox
         x_min, x_max = size[0] - x_max, size[0] - x_min
         gaze_x, gaze_y = 1 - gaze[0], gaze[1]
-        return image, (x_min, y_min, x_max, y_max), (gaze_x, gaze_y), head_mask, size
+        return image, (x_min, y_min, x_max, y_max), (gaze_x, gaze_y), size
 
 
 class RandomRotate(Augmentation):
@@ -195,7 +186,6 @@ class RandomRotate(Augmentation):
         image: Image,
         bbox: Tuple[float],
         gaze: Tuple[float],
-        head_mask: Image,
         size: Tuple[int],
     ):
         x_min, y_min, x_max, y_max = bbox
@@ -223,7 +213,6 @@ class RandomRotate(Augmentation):
         )
 
         image = image.transform((nw, nh), Image.AFFINE, rot_mat, self.resample)
-        head_mask = head_mask.transform((nw, nh), Image.AFFINE, rot_mat, self.resample)
 
         xx = []
         yy = []
@@ -247,7 +236,6 @@ class RandomRotate(Augmentation):
             image,
             (x_min, y_min, x_max, y_max),
             (gaze_x, gaze_y),
-            head_mask,
             (nw, nh),
         )
 
@@ -271,10 +259,10 @@ class ColorJitter(Augmentation):
         image: Image,
         bbox: Tuple[float],
         gaze: Tuple[float],
-        head_mask: Image,
         size: Tuple[int],
     ):
-        return self.color_jitter(image), bbox, gaze, head_mask, size
+        return self.color_jitter(image), bbox, gaze, size
+
 
 
 class RandomLSJ(Augmentation):
@@ -287,7 +275,6 @@ class RandomLSJ(Augmentation):
         image: Image,
         bbox: Tuple[float],
         gaze: Tuple[float],
-        head_mask: Image,
         size: Tuple[int],
     ):
         x_min, y_min, x_max, y_max = bbox
@@ -299,9 +286,6 @@ class RandomLSJ(Augmentation):
 
         image = TF.resize(image, (nh, nw))
         image = ImageOps.expand(image, (0, 0, width - nw, height - nh))
-        head_mask = TF.resize(head_mask, (nh, nw))
-        head_mask = ImageOps.expand(head_mask, (0, 0, width - nw, height - nh))
-
         x_min, y_min, x_max, y_max = (
             x_min * scale,
             y_min * scale,
@@ -309,4 +293,4 @@ class RandomLSJ(Augmentation):
             y_max * scale,
         )
         gaze_x, gaze_y = gaze_x * scale, gaze_y * scale
-        return image, (x_min, y_min, x_max, y_max), (gaze_x, gaze_y), head_mask, size
+        return image, (x_min, y_min, x_max, y_max), (gaze_x, gaze_y), size

@@ -5,9 +5,9 @@
 #SBATCH --ntasks=1 
 #SBATCH --job-name="asd_gaze"
 #SBATCH --partition=HCESC-H200-normal
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:2
 #SBATCH --mem=128g
-#SBATCH --output=./train_childgaze_dinov3_small.log
+#SBATCH --output=./train_all_gaze_dinov3_large.log
 
 source /projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/etc/profile.d/conda.sh
 export PATH=/projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/bin:$PATH
@@ -20,5 +20,5 @@ python=/projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/envs/smolagent/bi
 nvidia-smi
 
 python -u tools/train.py \
-  --config-file ./configs/childgaze_gaze_dinov3_small.py \
-  --num-gpu 1
+  --config-file ./configs/all_gaze_dinov3_large.py \
+  --num-gpu 2

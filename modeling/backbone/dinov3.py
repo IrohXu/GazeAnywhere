@@ -396,7 +396,9 @@ def vit_huge2(patch_size=16, **kwargs):
         embed_dim=1280,
         depth=32,
         num_heads=20,
-        ffn_ratio=4,
+        # ffn_ratio=4,
+        ffn_ratio=6,
+        ffn_layer="swiglu",
         **kwargs,
     )
     return model
@@ -430,10 +432,11 @@ def vit_7b(patch_size=16, **kwargs):
 
 
 def build_backbone_dinov3(
-    name: Literal["dinov3_giant", "dinov3_large", "dinov3_base", "dinov3_small"], **kwargs
+    name: Literal["dinov3_giant", "dinov3_huge", "dinov3_large", "dinov3_base", "dinov3_small"], **kwargs
 ):
     vit_dict = {
         "dinov3_giant": vit_giant2,
+        "dinov3_huge": vit_huge2,
         "dinov3_large": vit_large,
         "dinov3_base": vit_base,
         "dinov3_small": vit_small,
