@@ -266,6 +266,7 @@ class GazeFollow(Dataset):
                 "head_channels": head_channel,
                 "heatmaps": gaze_heatmap,
                 "gazes": torch.FloatTensor([gaze_x, gaze_y]),
+                "bbox": torch.FloatTensor([x_min, y_min, x_max, y_max]),
                 "gaze_inouts": torch.FloatTensor([gaze_inside]),
                 "imsize": imsize,
             }
@@ -278,6 +279,7 @@ class GazeFollow(Dataset):
                 "head_channels": head_channel,
                 "heatmaps": gaze_heatmap,
                 "gazes": cont_gaze,
+                "bbox": torch.FloatTensor([x_min, y_min, x_max, y_max]),
                 "gaze_inouts": torch.FloatTensor([gaze_inside]),
                 "imsize": imsize,
                 "image_path": path,

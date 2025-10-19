@@ -193,6 +193,9 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
+dinov3/
+samples/
+BOSCC_test/
 checkpoints/
 output/
 pretrained/
