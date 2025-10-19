@@ -1,4 +1,4 @@
-# ChildGaze: Social Embodied Intelligence for Gaze Following Understanding of Autism Children
+# AnyGaze: Gaze Target Estimation with Concepts
 
 ## Installation
 * Create a conda virtual env and activate it.
