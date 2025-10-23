@@ -84,7 +84,7 @@ python tools/visualize_on_gazefollow.py --config_file /projects/illinois/eng/cs/
 ```
 
 ```
-python tools/convert_visualization_to_video.py --input /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization_child_large_boscc/visualization/BOSCC_data/test --output /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/video_output/PWC022_2019_06_13_T1_panasonic_BOSCC.mp4
+python tools/convert_visualization_to_video.py --input /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization_child_large/visualization/data/PGT019_2019_12_04_T1_panasonic_ESCS_BOSCC_merged_16119_19988 --output /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/video_output/PGT019_2019_12_04_T1_panasonic_ESCS_BOSCC_merged_16119_19988.mp4
 ```
 
 bash ./convert_visualization_video.bash /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization_child_large/visualization/data /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/video_output
@@ -103,3 +103,13 @@ TODO
 ```
 python -u tools/train.py --config-file ./configs/gazefollow_gaze_dinov3_small.py --num-gpu 1
 ```
+
+
+```
+python scripts/convert_pth.py -s /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/pretrained/dinov3_vitl16_dinotxt-a442d8f5.pth -d /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/pretrained/dinov3_vitl16_dinotxt.pth
+```
+
+```
+python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large.py --num-gpu 1
+```
+

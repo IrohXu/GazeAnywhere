@@ -19,11 +19,11 @@ python=/projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/envs/smolagent/bi
 
 nvidia-smi
 
-python tools/visualize_on_gazefollow2.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/childgaze_gaze_dinov3_large_boscc.py \
-  --output_path /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization_child_large_boscc \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/all_gaze_dinov3_large/model_final.pth \
-  --use_dark_inference
+# python tools/visualize_on_gazefollow2.py \
+#   --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/childgaze_gaze_dinov3_large_boscc.py \
+#   --output_path /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization_child_large_boscc \
+#   --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/all_gaze_dinov3_large/model_final.pth \
+#   --use_dark_inference
 
 python tools/visualize_on_gazefollow2.py \
   --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/childgaze_gaze_dinov3_large.py \

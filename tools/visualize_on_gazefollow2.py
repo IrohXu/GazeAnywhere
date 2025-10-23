@@ -19,42 +19,85 @@ Color = Tuple[int, int, int]  # BGR (OpenCV)
 
 def overlay_heatmap_on_image(image_bgr: np.ndarray,
                              heatmap_01: np.ndarray,
-                             boxes: List[Tuple[int, int, int, int]],
-                             color: Color = (0, 255, 0),       # green in BGR
+                             boxes: Tuple[int, int, int, int],
+                             color: Tuple[int, int, int] = (0, 255, 0),  # BGR
                              thickness: int = 4,
-                             alpha: float = 0.5,
-                             colormap: int = cv2.COLORMAP_JET):
-    """
-    Overlay a [0,1] heatmap (Hh x Wh) onto an image (Hi x Wi x 3, BGR).
-    - Resizes heatmap to image size
-    - Colorizes with OpenCV colormap
-    - Blends: out = alpha*heat_color + (1-alpha)*image
-    Returns (overlay_bgr, colored_heat_bgr) as uint8.
-    """
+                             alpha: float = 0.15,                       # small blend
+                             colormap: int = cv2.COLORMAP_JET,
+                             mask_thresh: float = 0.10):                # ignore tiny heat
     H, W = image_bgr.shape[:2]
+
+    # heat -> resized -> [0,1] -> uint8 for colormap
     heat_resized = cv2.resize(heatmap_01.astype(np.float32), (W, H), interpolation=cv2.INTER_LINEAR)
     heat_resized = np.clip(heat_resized, 0.0, 1.0)
     heat_uint8 = (heat_resized * 255).round().astype(np.uint8)
     colored_heat_bgr = cv2.applyColorMap(heat_uint8, colormap)
-    image_bgr_u8 = image_bgr if image_bgr.dtype == np.uint8 else np.clip(image_bgr, 0, 255).astype(np.uint8)
-    overlay_bgr = cv2.addWeighted(colored_heat_bgr, alpha, image_bgr_u8, 1 - alpha, 0.0)
-    
-    x1, y1, x2, y2 = boxes
-    x1 = int(max(0, min(W - 1, x1)))
-    y1 = int(max(0, min(H - 1, y1)))
-    x2 = int(max(0, min(W - 1, x2)))
-    y2 = int(max(0, min(H - 1, y2)))
 
-    # Swap if coordinates are reversed
+    # inputs to float32
+    img_u8 = image_bgr if image_bgr.dtype == np.uint8 else np.clip(image_bgr, 0, 255).astype(np.uint8)
+    img_f  = img_u8.astype(np.float32)
+    heat_f = colored_heat_bgr.astype(np.float32)
+
+    # standard blended image
+    blended = cv2.addWeighted(heat_f, alpha, img_f, 1 - alpha, 0.0)
+
+    # only apply where heat is meaningful
+    mask = (heat_resized >= mask_thresh).astype(np.float32)[..., None]  # (H,W,1)
+    overlay_f = np.where(mask > 0, blended, img_f)
+
+    overlay_bgr = np.clip(overlay_f, 0, 255).astype(np.uint8)
+
+    # ---- robust single-box handling (still just one box) ----
+    b = np.array(boxes, dtype=np.float32).reshape(-1)
+    if b.size != 4:
+        raise ValueError(f"'boxes' must be 4 numbers, got shape {np.array(boxes).shape} / size {b.size}")
+    x1, y1, x2, y2 = map(int, b)
+    x1 = int(max(0, min(W - 1, x1)));  y1 = int(max(0, min(H - 1, y1)))
+    x2 = int(max(0, min(W - 1, x2)));  y2 = int(max(0, min(H - 1, y2)))
     if x2 < x1: x1, x2 = x2, x1
     if y2 < y1: y1, y2 = y2, y1
-    
-    print(x1, y1, x2, y2)
 
-    # Draw rectangle
     cv2.rectangle(overlay_bgr, (x1, y1), (x2, y2), color, thickness)
-    
     return overlay_bgr, colored_heat_bgr
+
+# def overlay_heatmap_on_image(image_bgr: np.ndarray,
+#                              heatmap_01: np.ndarray,
+#                              boxes: List[Tuple[int, int, int, int]],
+#                              color: Color = (0, 255, 0),       # green in BGR
+#                              thickness: int = 4,
+#                              alpha: float = 0.5,
+#                              colormap: int = cv2.COLORMAP_JET):
+#     """
+#     Overlay a [0,1] heatmap (Hh x Wh) onto an image (Hi x Wi x 3, BGR).
+#     - Resizes heatmap to image size
+#     - Colorizes with OpenCV colormap
+#     - Blends: out = alpha*heat_color + (1-alpha)*image
+#     Returns (overlay_bgr, colored_heat_bgr) as uint8.
+#     """
+#     H, W = image_bgr.shape[:2]
+#     heat_resized = cv2.resize(heatmap_01.astype(np.float32), (W, H), interpolation=cv2.INTER_LINEAR)
+#     heat_resized = np.clip(heat_resized, 0.0, 1.0)
+#     heat_uint8 = (heat_resized * 255).round().astype(np.uint8)
+#     colored_heat_bgr = cv2.applyColorMap(heat_uint8, colormap)
+#     image_bgr_u8 = image_bgr if image_bgr.dtype == np.uint8 else np.clip(image_bgr, 0, 255).astype(np.uint8)
+#     overlay_bgr = cv2.addWeighted(colored_heat_bgr, alpha, image_bgr_u8, 1 - alpha, 0.0)
+    
+#     x1, y1, x2, y2 = boxes
+#     x1 = int(max(0, min(W - 1, x1)))
+#     y1 = int(max(0, min(H - 1, y1)))
+#     x2 = int(max(0, min(W - 1, x2)))
+#     y2 = int(max(0, min(H - 1, y2)))
+
+#     # Swap if coordinates are reversed
+#     if x2 < x1: x1, x2 = x2, x1
+#     if y2 < y1: y1, y2 = y2, y1
+    
+#     print(x1, y1, x2, y2)
+
+#     # Draw rectangle
+#     cv2.rectangle(overlay_bgr, (x1, y1), (x2, y2), color, thickness)
+    
+#     return overlay_bgr, colored_heat_bgr
 
 
 def print_model_size(model: torch.nn.Module, verbose: bool = False) -> None:
@@ -143,7 +186,8 @@ def do_test(cfg, model, visualization_dir, use_dark_inference=False):
                 )
                 
                 image = cv2.imread(osp.join(cfg.dataloader.val.val_root, image_path[b_i]))
-                overlay_bgr, colored_heat_bgr = overlay_heatmap_on_image(image, scaled_heatmap, head_bbox, alpha=0.3)
+                overlay_bgr, colored_heat_bgr = overlay_heatmap_on_image(image, scaled_heatmap, head_bbox)
+                # overlay_bgr, colored_heat_bgr = overlay_heatmap_on_image(image, scaled_heatmap, head_bbox, alpha=0.1)
                 visualization_pred = overlay_bgr
                 cv2.imwrite(visualization_save_path, visualization_pred)
 

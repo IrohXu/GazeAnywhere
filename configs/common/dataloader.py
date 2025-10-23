@@ -95,6 +95,8 @@ data_info.gazefollow = OmegaConf.create()
 
 data_info.gaze_dataset = OmegaConf.create()
 
+data_info.anygaze_dataset = OmegaConf.create()
+
 data_info.input_size = 224
 data_info.output_size = 64
 data_info.quant_labelmap = True
@@ -121,7 +123,7 @@ data_info.max_len = 32
 # Dataloader(gazefollow/video_atention_target, train/val)
 def __build_dataloader(
     name: Literal[
-        "gazefollow", "video_attention_target", "video_attention_target_video", "gaze_dataset"
+        "gazefollow", "video_attention_target", "video_attention_target_video", "gaze_dataset", "anygaze_dataset"
     ],
     is_train: bool,
     batch_size: int = 64,
@@ -136,8 +138,9 @@ def __build_dataloader(
         "gazefollow",
         "video_attention_target",
         "video_attention_target_video",
-        "gaze_dataset"
-    ], f'{name} not in ("gazefollow", "video_attention_target", "video_attention_target_video", "gaze_dataset")'
+        "gaze_dataset",
+        "anygaze_dataset",
+    ], f'{name} not in ("gazefollow", "video_attention_target", "video_attention_target_video", "gaze_dataset", "anygaze_dataset")'
 
     for k, v in kwargs.items():
         if k in ["train_root", "train_anno", "val_root", "val_anno", "head_root"]:
@@ -150,6 +153,7 @@ def __build_dataloader(
         "video_attention_target": VideoAttentionTarget,
         "video_attention_target_video": VideoAttentionTargetVideo,
         "gaze_dataset": GazeDataset,
+        "anygaze_dataset": AnyGazeDataset,
     }
     dataset = L(datasets[name])(
         image_root=data_info[name]["train_root" if is_train else "val_root"],
@@ -237,3 +241,13 @@ dataloader.gaze_dataset.val = L(__build_dataloader)(
     name="gaze_dataset",
     is_train=False,
 )
+dataloader.anygaze_dataset = OmegaConf.create()
+dataloader.anygaze_dataset.train = L(__build_dataloader)(
+    name="anygaze_dataset",
+    is_train=True,
+)
+dataloader.anygaze_dataset.val = L(__build_dataloader)(
+    name="anygaze_dataset",
+    is_train=False,
+)
+

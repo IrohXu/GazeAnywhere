@@ -4,3 +4,4 @@ from .gazefollow import GazeFollow
 from .data_utils import get_transform
 from .masking import MaskGenerator
 from .gaze_dataset import GazeDataset
+from .anygaze_dataset import AnyGazeDataset

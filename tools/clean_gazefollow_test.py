@@ -6,12 +6,10 @@ import torch
 from PIL import Image
 
 datasets_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets"
-gazefollow_training_path = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/gazefollow/train_annotations_release.txt"
+gazefollow_training_path = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/gazefollow/test_annotations_release.txt"
 videoattentiontarget_training_dir = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/videoattentiontarget/annotations/train"
-childplay_training_path = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/child_play_train.csv"
-childplay_val_path = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/child_play_val.csv"
 
-output_path = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/train_annotations_childplay.txt"
+output_path = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/gazefollow_test_annotations.txt"
 
 output_dict = {
     "path": [],
@@ -45,7 +43,7 @@ def process_gazefollow(anno_root):
         "head_y_min",
         "head_x_max",
         "head_y_max",
-        "inout",
+        # "inout",
         "meta0",
         "meta1",
     ]
@@ -56,9 +54,9 @@ def process_gazefollow(anno_root):
         index_col=False,
         encoding="utf-8-sig",
     )
-    df = df[
-        df["inout"] != -1
-    ]  # only use "in" or "out "gaze. (-1 is invalid, 0 is out gaze)
+    # df = df[
+    #     df["inout"] != -1
+    # ]  # only use "in" or "out "gaze. (-1 is invalid, 0 is out gaze)
 
     for idx, row in df.iterrows():
         path = "gazefollow/" + row["path"]
@@ -69,7 +67,7 @@ def process_gazefollow(anno_root):
         head_y_min = row["head_y_min"]
         head_x_max = row["head_x_max"]
         head_y_max = row["head_y_max"]
-        inout = row["inout"]
+        # inout = row["inout"]
         source = "gazefollow"
         meta0 = row["meta0"]
         meta1 = row["meta1"]
@@ -82,58 +80,7 @@ def process_gazefollow(anno_root):
         output_dict["head_y_min"].append(head_y_min)
         output_dict["head_x_max"].append(head_x_max)
         output_dict["head_y_max"].append(head_y_max)
-        output_dict["inout"].append(inout)
-        output_dict["source"].append(source)
-        output_dict["meta0"].append(meta0)
-        output_dict["meta1"].append(meta1)
-        
-        
-def process_childplay(anno_root):
-    column_names = [
-        "path",
-        "idx",
-        "gaze_x",
-        "gaze_y",
-        "head_x_min",
-        "head_y_min",
-        "head_x_max",
-        "head_y_max",
-        "inout",
-        "source",
-        "meta0",
-        "meta1",
-    ]
-    df = pd.read_csv(
-        anno_root,
-        sep=",",
-        names=column_names,
-        index_col=False,
-        encoding="utf-8-sig",
-    )
-
-    for idx, row in df.iterrows():
-        path = row["path"]
-        idx = row["idx"]
-        gaze_x = row["gaze_x"]
-        gaze_y = row["gaze_y"]
-        head_x_min = row["head_x_min"]
-        head_y_min = row["head_y_min"]
-        head_x_max = row["head_x_max"]
-        head_y_max = row["head_y_max"]
-        inout = row["inout"]
-        source = "childplay"
-        meta0 = row["meta0"]
-        meta1 = row["meta1"]
-
-        output_dict["path"].append(path)
-        output_dict["idx"].append(idx)
-        output_dict["gaze_x"].append(gaze_x)
-        output_dict["gaze_y"].append(gaze_y)
-        output_dict["head_x_min"].append(head_x_min)
-        output_dict["head_y_min"].append(head_y_min)
-        output_dict["head_x_max"].append(head_x_max)
-        output_dict["head_y_max"].append(head_y_max)
-        output_dict["inout"].append(inout)
+        output_dict["inout"].append(1)
         output_dict["source"].append(source)
         output_dict["meta0"].append(meta0)
         output_dict["meta1"].append(meta1)
@@ -220,9 +167,7 @@ def process_videoattentiontarget(anno_root):
                 idx += 1
 
 process_gazefollow(gazefollow_training_path)
-process_videoattentiontarget(videoattentiontarget_training_dir)
-process_childplay(childplay_training_path)
-process_childplay(childplay_val_path)
+# process_videoattentiontarget(videoattentiontarget_training_dir)
 
 idx = 1
 for i in range(len(output_dict["idx"])):
