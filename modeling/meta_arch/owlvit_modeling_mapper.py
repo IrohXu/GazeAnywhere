@@ -2,10 +2,13 @@ import torch
 from torch import nn
 from typing import Dict, Union
 from ..backbone.vit import Block
-from ..fusion.cross_attention import CrossAttentionBlock
+# --- REMOVED --- We no longer need the custom CrossAttentionBlock
+# from ..fusion.cross_attention import CrossAttentionBlock 
 import torchvision
-
 import math
+import torch.nn.functional as F # --- ADDED --- May be needed for F.normalize if adding class head
+
+# --- (Helper functions positionalencoding2d and repeat_tensors remain unchanged) ---
 
 def positionalencoding2d(d_model, height, width):
     """
@@ -31,7 +34,6 @@ def positionalencoding2d(d_model, height, width):
 
     return pe
 
-
 def positionalencoding1d(d_model, length):
     """
     :param d_model: dimension of the model
@@ -49,13 +51,12 @@ def positionalencoding1d(d_model, length):
     pe[1::2, :] = torch.cos(pos * div_term).transpose(0, 1)
     return pe
 
-
 def repeat_tensors(tensor, repeat_counts):
     repeated_tensors = [tensor[i:i+1].repeat(repeat, *[1] * (tensor.ndim - 1)) for i, repeat in enumerate(repeat_counts)]
     return torch.cat(repeated_tensors, dim=0)
 
 
-class AnyGazeModelMapper(nn.Module):
+class OWLViTModelMapper(nn.Module): # --- RENAMED ---
     def __init__(
         self,
         backbone: nn.Module,
@@ -65,8 +66,8 @@ class AnyGazeModelMapper(nn.Module):
         freeze_backbone: bool = True,
         dim: int = 256,
         inout: bool = True,
-        fusion_layers: int = 3,
-        num_layers: int = 3,
+        # --- REMOVED --- fusion_layers: int = 3,
+        num_layers: int = 3, # This is the old "gaze transformer", you may want to remove
         linear_dim: int = 1024,
         linear_txt_dim: int = 2048,
         image_size: int = 512,
@@ -85,11 +86,13 @@ class AnyGazeModelMapper(nn.Module):
         self.dim = dim
         self.linear = nn.Linear(linear_dim, self.dim)
         self.linear_txt = nn.Linear(linear_txt_dim, self.dim)
-        # self.head_token = nn.Embedding(1, self.dim)
+
         self.mask_size = image_size // patch_size
-        self.register_buffer("pos_embed", positionalencoding2d(self.dim, self.mask_size, self.mask_size).squeeze(dim=0).squeeze(dim=0))
+        self.register_buffer("pos_embed", positionalencoding2d(self.dim, self.mask_size, self.mask_size))
+        # self.text_pos_embed = nn.Embedding(1, self.dim)  # --- ADDED --- Learnable positional embeddings
         self.register_buffer("text_pos_embed", positionalencoding1d(self.dim, max_text_seq))
         
+        # --- ADDED --- Learnable positional embedding for text tokens
         self.max_text_seq = max_text_seq
         
         self.inout = inout
@@ -98,23 +101,17 @@ class AnyGazeModelMapper(nn.Module):
         if freeze_backbone:
             for param in self.backbone.parameters():
                 param.requires_grad = False
-        
+                
         self.num_head_queries = num_head_queries
         
         self.head_queries = nn.Embedding(self.num_head_queries, self.dim)
-
+        
         self.transformer = nn.Sequential(*[
             Block(
                 dim=self.dim, 
                 num_heads=8, 
                 mlp_ratio=4, 
                 drop_path=0.1) for i in range(num_layers)]
-        )
-        
-        self.heatmap_head = nn.Sequential(
-            nn.ConvTranspose2d(dim, dim, kernel_size=2, stride=2),
-            nn.Conv2d(dim, 1, kernel_size=1, bias=False),
-            nn.Sigmoid()
         )
         
         self.head_bbox_head = nn.Sequential(
@@ -126,15 +123,7 @@ class AnyGazeModelMapper(nn.Module):
             nn.Sigmoid()
         )
         
-        if self.inout:
-            self.inout_head = nn.Sequential(
-                nn.Linear(self.dim, 128),
-                nn.ReLU(),
-                nn.Dropout(0.1),
-                nn.Linear(128, 1),
-                # nn.Sigmoid()
-            )
-            self.inout_token = nn.Embedding(1, self.dim)
+        # self.inout_token = nn.Embedding(1, self.dim)
 
     def forward(self, x):
         (
@@ -146,28 +135,19 @@ class AnyGazeModelMapper(nn.Module):
             gt_inouts,
             image_masks,
         ) = self.preprocess_inputs(x)
-        
+
         B = scenes.size(0)
-        
-        # Get out-dict
-        x = self.backbone(
-            scenes,
-            texts,
-        )
-        
+
         out = self.backbone(scenes, texts)
         img_feats = out["img_feat"]          # (B, N_img, C_in)
         txt_feats = out["text_feat"]         # (B, N_txt, C_in)
         txt_emb_feats = out["text_emb"]      # (B, C_txt_in)
-        img_emb_feats= out["img_emb"]      # (B, C_img_in)
         
         # project
         img_feats = self.linear(img_feats)        # (B, N_img, dim)
-        img_emb_feats = self.linear(img_emb_feats)  # (B, dim)
-
-        txt_feats = self.linear_txt(txt_feats)  # (B, N_txt, dim)
         txt_emb_feats = self.linear_txt(txt_emb_feats)  # (B, dim)
-        
+        txt_feats = self.linear_txt(txt_feats)  # (B, N_txt, dim)
+
         # image pos (assumes N_img == mask_size*mask_size)
         img_pos = self.pos_embed.flatten(1).permute(1, 0).unsqueeze(0)  # (1, N_img, dim)
         img_feats = img_feats + img_pos
@@ -175,49 +155,28 @@ class AnyGazeModelMapper(nn.Module):
         # text pos
         txt_pos = self.text_pos_embed.permute(1, 0).unsqueeze(0)  # (1, N_txt, dim)
         txt_feats = txt_feats + txt_pos
-        
+
+        # 1 text token
+        # txt_token = txt_emb_feats.unsqueeze(1) + self.text_pos_embed.weight.unsqueeze(0)  # (B, 1, dim)
+
+        # text-conditioned head token
         base_head = self.head_queries.weight.unsqueeze(0).repeat(B, 1, 1)   # (B, 1, dim)
-        head_token = base_head + txt_emb_feats.unsqueeze(1)   
+        head_token = base_head + txt_emb_feats.unsqueeze(1)                 # (B, 1, dim)
 
-        base_inout = self.inout_token.weight.unsqueeze(dim=0).repeat(B, 1, 1)
-        inout_token = base_inout + img_emb_feats.unsqueeze(1)                 # (B, 1, dim)
-
-        if self.inout:
-            feats = torch.cat([head_token, txt_feats, img_feats, inout_token], dim=1)
-        else:
-            feats = torch.cat([head_token, txt_feats, img_feats], dim=1)
+        # final sequence: [head, img..., text]
+        feats = torch.cat([head_token, txt_feats, img_feats], dim=1)        # (B, 1+N_img+1, dim)
 
         feats = self.transformer(feats)
-        
+
+        # take head token back
         bbox_token = feats[:, 0, :]           # (B, dim)
         pred_boxes = self.head_bbox_head(bbox_token)  # (B, 4)
-        
-        if self.inout:
-            inout_tokens = feats[:, -1, :] 
-            inout_preds = self.inout_head(inout_tokens).squeeze(dim=-1)
-            # inout_preds = utils.split_tensors(inout_preds, num_ppl_per_img)
-            feats = feats[:, 1+txt_feats.shape[1]:-1, :] # slice off inout tokens from scene tokens
-        
-        feats = feats.reshape(feats.shape[0], self.mask_size, self.mask_size, feats.shape[2]).permute(0, 3, 1, 2) # b (h w) c -> b c h w        
-        feats = self.heatmap_head(feats)
-        
-        # feats = self.heatmap_head(feats).squeeze(dim=1)
-        feats = torchvision.transforms.functional.resize(feats, self.out_size)
-        heatmap_preds = feats
-            
+
         if self.training:
-            return self.criterion(
-                heatmap_preds,
-                inout_preds,
-                pred_boxes, 
-                gt_heatmaps,
-                gt_inouts,
-                gt_heads
-            )
-        # Inference
-                
-        return heatmap_preds, inout_preds.sigmoid(), pred_boxes
-        # return heatmap_preds, inout_preds.sigmoid()
+            return self.criterion(pred_boxes, gt_heads)
+
+        return {"pred_boxes": pred_boxes}
+    
 
     def preprocess_inputs(self, batched_inputs: Dict[str, torch.Tensor]):
         texts = batched_inputs["texts"]
@@ -247,3 +206,4 @@ class AnyGazeModelMapper(nn.Module):
             if "image_masks" in batched_inputs.keys()
             else None,
         )
+

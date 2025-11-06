@@ -5,3 +5,5 @@ from .data_utils import get_transform
 from .masking import MaskGenerator
 from .gaze_dataset import GazeDataset
 from .anygaze_dataset import AnyGazeDataset
+from .anygaze_dataset_visual import AnyGazeVisualConceptDataset
+from .anygaze_dataset_text import AnyGazeTextConceptDataset

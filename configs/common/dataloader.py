@@ -97,6 +97,10 @@ data_info.gaze_dataset = OmegaConf.create()
 
 data_info.anygaze_dataset = OmegaConf.create()
 
+data_info.anygaze_dataset_visual = OmegaConf.create()
+
+data_info.anygaze_dataset_text = OmegaConf.create()
+
 data_info.input_size = 224
 data_info.output_size = 64
 data_info.quant_labelmap = True
@@ -123,7 +127,7 @@ data_info.max_len = 32
 # Dataloader(gazefollow/video_atention_target, train/val)
 def __build_dataloader(
     name: Literal[
-        "gazefollow", "video_attention_target", "video_attention_target_video", "gaze_dataset", "anygaze_dataset"
+        "gazefollow", "video_attention_target", "video_attention_target_video", "gaze_dataset", "anygaze_dataset", "anygaze_dataset_visual", "anygaze_dataset_text"
     ],
     is_train: bool,
     batch_size: int = 64,
@@ -140,7 +144,9 @@ def __build_dataloader(
         "video_attention_target_video",
         "gaze_dataset",
         "anygaze_dataset",
-    ], f'{name} not in ("gazefollow", "video_attention_target", "video_attention_target_video", "gaze_dataset", "anygaze_dataset")'
+        "anygaze_dataset_visual",
+        "anygaze_dataset_text",
+    ], f'{name} not in ("gazefollow", "video_attention_target", "video_attention_target_video", "gaze_dataset", "anygaze_dataset", "anygaze_dataset_visual", "anygaze_dataset_text")'
 
     for k, v in kwargs.items():
         if k in ["train_root", "train_anno", "val_root", "val_anno", "head_root"]:
@@ -154,6 +160,8 @@ def __build_dataloader(
         "video_attention_target_video": VideoAttentionTargetVideo,
         "gaze_dataset": GazeDataset,
         "anygaze_dataset": AnyGazeDataset,
+        "anygaze_dataset_visual": AnyGazeVisualConceptDataset,
+        "anygaze_dataset_text": AnyGazeTextConceptDataset,
     }
     dataset = L(datasets[name])(
         image_root=data_info[name]["train_root" if is_train else "val_root"],
@@ -250,4 +258,21 @@ dataloader.anygaze_dataset.val = L(__build_dataloader)(
     name="anygaze_dataset",
     is_train=False,
 )
-
+dataloader.anygaze_dataset_visual = OmegaConf.create()
+dataloader.anygaze_dataset_visual.train = L(__build_dataloader)(
+    name="anygaze_dataset_visual",
+    is_train=True,
+)
+dataloader.anygaze_dataset_visual.val = L(__build_dataloader)(
+    name="anygaze_dataset_visual",
+    is_train=False,
+)
+dataloader.anygaze_dataset_text = OmegaConf.create()
+dataloader.anygaze_dataset_text.train = L(__build_dataloader)(
+    name="anygaze_dataset_text",   
+    is_train=True,
+)
+dataloader.anygaze_dataset_text.val = L(__build_dataloader)(
+    name="anygaze_dataset_text",
+    is_train=False,
+)

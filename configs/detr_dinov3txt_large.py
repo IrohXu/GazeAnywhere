@@ -8,26 +8,25 @@ from modeling import backbone, meta_arch, criterion
 from detectron2.config import LazyCall as L
 
 num_gpu = device_count()
-ins_per_iter = 256
-len_dataset = 54947
-num_epoch = 50
+ins_per_iter = 128
+len_dataset = 172232
+num_epoch = 25
 
-model = L(meta_arch.AnyGazeModelMapper)()
+model = L(meta_arch.DETRModelMapper)()
 model.backbone = L(backbone.build_backbone_dinov3txt)(
     name="dinov3_large"
 )
 model.tokenizer = L(backbone.build_tokenizer_dinov3txt)()
-model.criterion = L(criterion.GazeMapperCriterion)()
+model.criterion = L(criterion.DETRMapperCriterion)()
 # model
 # model.backbone.layerscale_init = 1
 # model.backbone.mask_k_bias = True
 # model.backbone.n_storage_tokens = 4
-model.criterion.use_focal_loss = True
 model.device = "cuda"
 model.freeze_backbone = True
 model.inout = True
 model.patch_size = 16
-model.dim = 512
+model.dim = 256
 # dataloader
 dataloader = dataloader.anygaze_dataset
 dataloader.train.train_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets"
@@ -51,11 +50,11 @@ train.init_checkpoint = "pretrained/dinov3_vitl16_dinotxt.pth"
 train.output_dir = join("./output", basename(__file__).split(".")[0])
 train.max_iter = len_dataset * num_epoch // ins_per_iter
 train.log_period = len_dataset // (ins_per_iter * 10)
-train.checkpointer.max_to_keep = 10
+train.checkpointer.max_to_keep = 5
 train.checkpointer.period = len_dataset // ins_per_iter
 train.seed = 0
 # optimizer
-optimizer.lr = 1e-3
+optimizer.lr = 1e-4
 optimizer.betas = (0.9, 0.99)
 lr_multiplier.scheduler.typ = "cosine"
 lr_multiplier.scheduler.start_value = 1

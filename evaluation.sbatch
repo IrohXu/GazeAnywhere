@@ -7,7 +7,7 @@
 #SBATCH --partition=HCESC-H100-normal
 #SBATCH --gres=gpu:1
 #SBATCH --mem=128g
-#SBATCH --output=./evaluation_dinov3_base_all.log
+#SBATCH --output=./evaluation_anygaze_512.log
 
 source /projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/etc/profile.d/conda.sh
 export PATH=/projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/bin:$PATH
@@ -19,12 +19,27 @@ python=/projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/envs/smolagent/bi
 
 nvidia-smi
 
-python tools/eval_on_gazefollow.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/gazefollow_gaze_dinov3_base.py \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/all_gaze_dinov3_base/model_final.pth \
+# python tools/eval_on_gazefollow2.py \
+#   --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_128.py \
+#   --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_128/model_final.pth \
+#   --use_dark_inference
+
+python tools/eval_on_gazefollow2.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_512.py \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_512/model_final.pth \
   --use_dark_inference
 
-python tools/eval_on_video_attention_target.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/videoattentiontarget_gaze_dinov3_base.py \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/all_gaze_dinov3_base/model_final.pth \
-  --use_dark_inference
+# python tools/eval_on_gazefollow2.py \
+#   --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept.py \
+#   --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept/model_final.pth \
+#   --use_dark_inference
+
+# python tools/eval_on_videoattentiontarget2.py \
+#   --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_vat.py \
+#   --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept/model_final.pth \
+#   --use_dark_inference
+
+# python tools/eval_on_videoattentiontarget2.py \
+#   --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_childplay.py \
+#   --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept/model_final.pth \
+#   --use_dark_inference

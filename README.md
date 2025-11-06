@@ -113,3 +113,57 @@ python scripts/convert_pth.py -s /projects/illinois/eng/cs/jrehg/users/xucao2/Ch
 python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large.py --num-gpu 1
 ```
 
+
+
+python tools/eval_on_gazefollow.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large.py \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large/model_final.pth \
+  --use_dark_inference
+
+
+python tools/visualize_on_gazefollow2.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large.py \
+  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large/model_final.pth \
+  --use_dark_inference
+
+python tools/visualize_on_gazefollow3.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/childgaze_gaze_dinov3_large.py \
+  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/old_childgaze \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/childgaze_gaze_dinov3_large/model_final.pth \
+  --use_dark_inference
+
+
+
+```
+python -u tools/train.py --config-file ./configs/anygaze_siglip2_large.py --num-gpu 4
+```
+
+
+```
+python -u tools/train.py --config-file ./configs/detr_dinov3txt_large.py --num-gpu 1
+```
+
+
+python tools/visualize_on_detr.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/owl_dinov3txt_large.py \
+  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/dinov3txt_owl \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/owl_dinov3txt_large/model_0001286.pth
+
+python tools/visualize_on_detr.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/owl_siglip2_large.py \
+  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/siglip2_owl \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/owl_siglip2_large/model_0004289.pth
+
+
+
+```
+python -u tools/train.py --config-file ./configs/owl_siglip2_large.py --num-gpu 1
+```
+
+python -u tools/train.py --config-file ./configs/owl_dinov3txt_large.py --num-gpu 1
+
+
+python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_visual_concept.py --num-gpu 1
+
+

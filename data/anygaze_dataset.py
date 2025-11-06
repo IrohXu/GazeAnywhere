@@ -6,6 +6,7 @@ from torch.utils.data import Dataset
 from torchvision.transforms import functional as TF
 from PIL import Image
 import pandas as pd
+import random
 
 from . import augmentation
 from .masking import MaskGenerator
@@ -27,7 +28,7 @@ class AnyGazeDataset(Dataset):
         bbox_jitter: float = 0.5,
         rand_crop: float = 0.5,
         rand_flip: float = 0.5,
-        color_jitter: float = 0.5,
+        color_jitter: float = 0.0,
         rand_rotate: float = 0.0,
         rand_lsj: float = 0.0,
     ):
@@ -57,9 +58,9 @@ class AnyGazeDataset(Dataset):
             )
             df = df.sample(frac=1).reset_index(drop=True)  # shuffle the data
             
-            df = df[
-                df["inout"] != -1
-            ]  # only use "in" or "out "gaze. (-1 is invalid, 0 is out gaze)
+            # df = df[
+            #     df["inout"] != -1
+            # ]  # only use "in" or "out "gaze. (-1 is invalid, 0 is out gaze)
             df.reset_index(inplace=True)
             self.y_train = df[
                 [
@@ -86,6 +87,8 @@ class AnyGazeDataset(Dataset):
                 "head_y_min",
                 "head_x_max",
                 "head_y_max",
+                "inout",
+                "source",
                 "meta0",
                 "meta1",
                 "text5",
@@ -107,6 +110,8 @@ class AnyGazeDataset(Dataset):
                     "head_y_min",
                     "head_x_max",
                     "head_y_max",
+                    "text5",
+                    "text10",
                 ]
             ].groupby(["path", "head_x_min"])
             self.keys = list(df.groups.keys())
@@ -151,6 +156,8 @@ class AnyGazeDataset(Dataset):
                 y_max = row["head_y_max"]
                 gaze_x = row["gaze_x"]
                 gaze_y = row["gaze_y"]
+                text5 = row["text5"]
+                text10 = row["text10"]
                 cont_gaze.append(
                     [float(gaze_x), float(gaze_y)]
                 )  # all ground truth gaze are stacked up
@@ -200,8 +207,16 @@ class AnyGazeDataset(Dataset):
             x_min, y_min, x_max, y_max = bbox
             gaze_x, gaze_y = gaze
             width, height = size
+            x_center_norm = round((x_min + x_max) / (2 * width), 3)
+            y_center_norm = round((y_min + y_max) / (2 * height), 3)
+            # text = "head position: " + str(x_center_norm) + " " + str(y_center_norm)
+            text = text10
+        else:
+            x_center_norm = round((x_min + x_max) / (2 * width), 3)
+            y_center_norm = round((y_min + y_max) / (2 * height), 3)
+            print("head position: " + str(x_center_norm) + " " + str(y_center_norm), text5, text10)
             
-            text = text5  # use text5 for training
+            text = text10
 
         head_channel = utils.get_head_box_channel(
             x_min,
@@ -259,7 +274,7 @@ class AnyGazeDataset(Dataset):
                 "head_channels": head_channel,
                 "heatmaps": gaze_heatmap,
                 "gazes": torch.FloatTensor([gaze_x, gaze_y]),
-                "bbox": torch.FloatTensor([x_min, y_min, x_max, y_max]),
+                "bbox": torch.FloatTensor([(x_max + x_min) / (2 * width), (y_max + y_min) / (2 * height), (x_max-x_min) / width, (y_max-y_min) / height]),
                 "gaze_inouts": torch.FloatTensor([gaze_inside]),
                 "imsize": imsize,
                 "image_path": path,
@@ -274,10 +289,12 @@ class AnyGazeDataset(Dataset):
                 "head_channels": head_channel,
                 "heatmaps": gaze_heatmap,
                 "gazes": cont_gaze,
-                "bbox": torch.FloatTensor([x_min, y_min, x_max, y_max]),
+                "bbox": torch.FloatTensor([(x_max + x_min) / (2 * width), (y_max + y_min) / (2 * height), (x_max-x_min) / width, (y_max-y_min) / height]),
+                "bbox_raw": torch.FloatTensor([x_min, y_min, x_max, y_max]),
                 "gaze_inouts": torch.FloatTensor([gaze_inside]),
                 "imsize": imsize,
                 "image_path": path,
+                "texts": text,
             }
 
     def __len__(self):

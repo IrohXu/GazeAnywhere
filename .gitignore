@@ -198,6 +198,8 @@ samples/
 BOSCC_test/
 checkpoints/
 output/
+dataset_demo/
 pretrained/
 pre_annotation/
+visualization/
 *.mp4

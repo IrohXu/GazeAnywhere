@@ -6,13 +6,63 @@ from torch.utils.data import Dataset
 from torchvision.transforms import functional as TF
 from PIL import Image
 import pandas as pd
+import random
 
 from . import augmentation
 from .masking import MaskGenerator
 from . import data_utils as utils
 
 
-class GazeDataset(Dataset):
+def random_prompt(
+    attribute: str,
+    position: str,
+    action: str,
+    pose: str,
+    size_weights: dict[int, float] | None = None,
+    rng: random.Random | None = None,
+) -> str:
+    """
+    Build a randomized 'key: value' string using a random subset (size 1..4) and random order.
+    - Automatically includes 1-item and 2-item cases.
+    - Skips empty/None values.
+    - `size_weights` lets you bias how often 1/2/3/4-item prompts appear.
+      e.g., {1:1, 2:2, 3:3, 4:4} biases toward longer prompts.
+    - Pass a custom `rng` for reproducibility (e.g., rng=random.Random(42)).
+    """
+    if rng is None:
+        rng = random
+
+    fields = {
+        "attribute": attribute,
+        "position": position,
+        "action": action,
+        "pose": pose,
+    }
+
+    # keep only non-empty values
+    available_keys = [k for k, v in fields.items() if v not in (None, "", [])]
+    if not available_keys:
+        return ""
+
+    # choose subset size (1..len(available))
+    if size_weights is None:
+        # neutral: all sizes equally likely
+        size_weights = {1: 1, 2: 1, 3: 1, 4: 1}
+
+    valid_sizes = [s for s in size_weights if 1 <= s <= len(available_keys)]
+    weights = [size_weights[s] for s in valid_sizes]
+    n = rng.choices(valid_sizes, weights=weights, k=1)[0]
+
+    # pick random subset and shuffle order
+    chosen = rng.sample(available_keys, n)
+    rng.shuffle(chosen)
+
+    # format
+    parts = [f"{k}: {fields[k]}" for k in chosen]
+    return "; ".join(parts)
+
+
+class AnyGazeTextConceptDataset(Dataset):
     def __init__(
         self,
         image_root: str,
@@ -24,10 +74,10 @@ class GazeDataset(Dataset):
         is_train: bool = True,
         *,
         mask_generator: Optional[MaskGenerator] = None,
-        bbox_jitter: float = 0.5,
-        rand_crop: float = 0.5,
-        rand_flip: float = 0.5,
-        color_jitter: float = 0.5,
+        bbox_jitter: float = 0.0,
+        rand_crop: float = 0.0,
+        rand_flip: float = 0.0,
+        color_jitter: float = 0.0,
         rand_rotate: float = 0.0,
         rand_lsj: float = 0.0,
     ):
@@ -45,19 +95,23 @@ class GazeDataset(Dataset):
                 "source",
                 "meta0",
                 "meta1",
+                "attribute",
+                "position",
+                "action",
+                "pose",
             ]
             df = pd.read_csv(
                 anno_root,
-                sep=",",
+                sep=";",
                 names=column_names,
                 index_col=False,
                 encoding="utf-8-sig",
             )
             df = df.sample(frac=1).reset_index(drop=True)  # shuffle the data
             
-            df = df[
-                df["inout"] != -1
-            ]  # only use "in" or "out "gaze. (-1 is invalid, 0 is out gaze)
+            # df = df[
+            #     df["inout"] != -1
+            # ]  # only use "in" or "out "gaze. (-1 is invalid, 0 is out gaze)
             df.reset_index(inplace=True)
             self.y_train = df[
                 [
@@ -68,6 +122,10 @@ class GazeDataset(Dataset):
                     "gaze_x",
                     "gaze_y",
                     "inout",
+                    "attribute",
+                    "position",
+                    "action",
+                    "pose",
                 ]
             ]
             self.X_train = df["path"]
@@ -86,10 +144,14 @@ class GazeDataset(Dataset):
                 "source",
                 "meta0",
                 "meta1",
+                "attribute",
+                "position",
+                "action",
+                "pose",
             ]
             df = pd.read_csv(
                 anno_root,
-                sep=",",
+                sep=";",
                 names=column_names,
                 index_col=False,
                 encoding="utf-8-sig",
@@ -104,6 +166,10 @@ class GazeDataset(Dataset):
                     "head_x_max",
                     "head_y_max",
                     "inout",
+                    "attribute",
+                    "position",
+                    "action",
+                    "pose",
                 ]
             ].groupby(["path", "head_x_min"])
             self.keys = list(df.groups.keys())
@@ -149,6 +215,10 @@ class GazeDataset(Dataset):
                 gaze_x = row["gaze_x"]
                 gaze_y = row["gaze_y"]
                 inout = row["inout"]
+                attribute = row["attribute"]
+                position = row["position"]
+                action = row["action"]
+                pose = row["pose"]
                 cont_gaze.append(
                     [float(gaze_x), float(gaze_y)]
                 )  # all ground truth gaze are stacked up
@@ -158,6 +228,7 @@ class GazeDataset(Dataset):
                 )  # pad dummy gaze to match size for batch processing
             cont_gaze = torch.FloatTensor(cont_gaze)
             gaze_inside = bool(inout)
+            # gaze_inside = True  # always consider test samples as inside
         else:
             path = self.X_train.iloc[index]
             (
@@ -168,6 +239,10 @@ class GazeDataset(Dataset):
                 gaze_x,
                 gaze_y,
                 inout,
+                attribute,
+                position,
+                action,
+                pose
             ) = self.y_train.iloc[index]
             gaze_inside = bool(inout)
 
@@ -196,6 +271,26 @@ class GazeDataset(Dataset):
             x_min, y_min, x_max, y_max = bbox
             gaze_x, gaze_y = gaze
             width, height = size
+            # center_rate = random.choice([2,3,4])
+            # x_center_norm = round((x_min + x_max) / (2 * width), center_rate)
+            # y_center_norm = round((y_min + y_max) / (2 * height), center_rate)
+            text = random_prompt(
+                attribute,
+                position,
+                action,
+                pose,
+                size_weights = {1: 0, 2: 1, 3: 1, 4: 1}
+            )
+        else:
+            # x_center_norm = round((x_min + x_max) / (2 * width), 3)
+            # y_center_norm = round((y_min + y_max) / (2 * height), 3)            
+            text = random_prompt(
+                attribute,
+                position,
+                action,
+                pose,
+                size_weights = {1: 0, 2: 0, 3: 0, 4: 1}
+            )
 
         head_channel = utils.get_head_box_channel(
             x_min,
@@ -253,10 +348,11 @@ class GazeDataset(Dataset):
                 "head_channels": head_channel,
                 "heatmaps": gaze_heatmap,
                 "gazes": torch.FloatTensor([gaze_x, gaze_y]),
-                "bbox": torch.FloatTensor([x_min, y_min, x_max, y_max]),
+                "bbox": torch.FloatTensor([(x_max + x_min) / (2 * width), (y_max + y_min) / (2 * height), (x_max-x_min) / width, (y_max-y_min) / height]),
                 "gaze_inouts": torch.FloatTensor([gaze_inside]),
                 "imsize": imsize,
                 "image_path": path,
+                "texts": text,
             }
             if self.mask_generator is not None:
                 out_dict["image_masks"] = image_mask
@@ -267,10 +363,12 @@ class GazeDataset(Dataset):
                 "head_channels": head_channel,
                 "heatmaps": gaze_heatmap,
                 "gazes": cont_gaze,
-                "bbox": torch.FloatTensor([x_min, y_min, x_max, y_max]),
+                "bbox": torch.FloatTensor([(x_max + x_min) / (2 * width), (y_max + y_min) / (2 * height), (x_max-x_min) / width, (y_max-y_min) / height]),
+                "bbox_raw": torch.FloatTensor([x_min, y_min, x_max, y_max]),
                 "gaze_inouts": torch.FloatTensor([gaze_inside]),
                 "imsize": imsize,
                 "image_path": path,
+                "texts": text,
             }
 
     def __len__(self):

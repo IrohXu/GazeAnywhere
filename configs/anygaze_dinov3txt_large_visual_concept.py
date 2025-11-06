@@ -8,16 +8,16 @@ from modeling import backbone, meta_arch, criterion
 from detectron2.config import LazyCall as L
 
 num_gpu = device_count()
-ins_per_iter = 256
-len_dataset = 54947
-num_epoch = 50
+ins_per_iter = 128
+len_dataset = 172232
+num_epoch = 25
 
 model = L(meta_arch.AnyGazeModelMapper)()
 model.backbone = L(backbone.build_backbone_dinov3txt)(
     name="dinov3_large"
 )
 model.tokenizer = L(backbone.build_tokenizer_dinov3txt)()
-model.criterion = L(criterion.GazeMapperCriterion)()
+model.criterion = L(criterion.AnyGazeMapperCriterion)()
 # model
 # model.backbone.layerscale_init = 1
 # model.backbone.mask_k_bias = True
@@ -27,13 +27,13 @@ model.device = "cuda"
 model.freeze_backbone = True
 model.inout = True
 model.patch_size = 16
-model.dim = 512
+model.dim = 256
 # dataloader
-dataloader = dataloader.anygaze_dataset
+dataloader = dataloader.anygaze_dataset_visual
 dataloader.train.train_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets"
 dataloader.val.val_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets"
-dataloader.train.train_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_train_annotations.txt"
-dataloader.val.val_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_test_annotations_gazefollow.txt"
+dataloader.train.train_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_pseudo_annotations.txt"
+dataloader.val.val_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/gazefollow_test_pseudo_annotations.txt"
 dataloader.train.batch_size = ins_per_iter // num_gpu
 dataloader.train.num_workers = dataloader.val.num_workers = 14
 dataloader.train.distributed = num_gpu > 1
@@ -47,7 +47,7 @@ dataloader.train.max_scene_patches_ratio = 0.5
 dataloader.val.batch_size = 32
 dataloader.val.distributed = False
 # train
-train.init_checkpoint = "pretrained/dinov3_vitl16_dinotxt.pth"
+train.init_checkpoint = "output/owl_dinov3txt_large/model_0028244.pth"
 train.output_dir = join("./output", basename(__file__).split(".")[0])
 train.max_iter = len_dataset * num_epoch // ins_per_iter
 train.log_period = len_dataset // (ins_per_iter * 10)
@@ -55,7 +55,7 @@ train.checkpointer.max_to_keep = 10
 train.checkpointer.period = len_dataset // ins_per_iter
 train.seed = 0
 # optimizer
-optimizer.lr = 1e-3
+optimizer.lr = 1e-4
 optimizer.betas = (0.9, 0.99)
 lr_multiplier.scheduler.typ = "cosine"
 lr_multiplier.scheduler.start_value = 1

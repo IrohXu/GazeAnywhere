@@ -6,13 +6,14 @@ from torch.utils.data import Dataset
 from torchvision.transforms import functional as TF
 from PIL import Image
 import pandas as pd
+import random
 
 from . import augmentation
 from .masking import MaskGenerator
 from . import data_utils as utils
 
 
-class GazeDataset(Dataset):
+class AnyGazeVisualConceptDataset(Dataset):
     def __init__(
         self,
         image_root: str,
@@ -27,7 +28,7 @@ class GazeDataset(Dataset):
         bbox_jitter: float = 0.5,
         rand_crop: float = 0.5,
         rand_flip: float = 0.5,
-        color_jitter: float = 0.5,
+        color_jitter: float = 0.0,
         rand_rotate: float = 0.0,
         rand_lsj: float = 0.0,
     ):
@@ -45,6 +46,8 @@ class GazeDataset(Dataset):
                 "source",
                 "meta0",
                 "meta1",
+                "text5",
+                "text10",
             ]
             df = pd.read_csv(
                 anno_root,
@@ -55,9 +58,9 @@ class GazeDataset(Dataset):
             )
             df = df.sample(frac=1).reset_index(drop=True)  # shuffle the data
             
-            df = df[
-                df["inout"] != -1
-            ]  # only use "in" or "out "gaze. (-1 is invalid, 0 is out gaze)
+            # df = df[
+            #     df["inout"] != -1
+            # ]  # only use "in" or "out "gaze. (-1 is invalid, 0 is out gaze)
             df.reset_index(inplace=True)
             self.y_train = df[
                 [
@@ -68,6 +71,8 @@ class GazeDataset(Dataset):
                     "gaze_x",
                     "gaze_y",
                     "inout",
+                    "text5",
+                    "text10",
                 ]
             ]
             self.X_train = df["path"]
@@ -86,6 +91,8 @@ class GazeDataset(Dataset):
                 "source",
                 "meta0",
                 "meta1",
+                "text5",
+                "text10",
             ]
             df = pd.read_csv(
                 anno_root,
@@ -103,7 +110,8 @@ class GazeDataset(Dataset):
                     "head_y_min",
                     "head_x_max",
                     "head_y_max",
-                    "inout",
+                    "text5",
+                    "text10",
                 ]
             ].groupby(["path", "head_x_min"])
             self.keys = list(df.groups.keys())
@@ -148,7 +156,8 @@ class GazeDataset(Dataset):
                 y_max = row["head_y_max"]
                 gaze_x = row["gaze_x"]
                 gaze_y = row["gaze_y"]
-                inout = row["inout"]
+                text5 = row["text5"]
+                text10 = row["text10"]
                 cont_gaze.append(
                     [float(gaze_x), float(gaze_y)]
                 )  # all ground truth gaze are stacked up
@@ -157,7 +166,7 @@ class GazeDataset(Dataset):
                     [-1, -1]
                 )  # pad dummy gaze to match size for batch processing
             cont_gaze = torch.FloatTensor(cont_gaze)
-            gaze_inside = bool(inout)
+            gaze_inside = True  # always consider test samples as inside
         else:
             path = self.X_train.iloc[index]
             (
@@ -168,6 +177,8 @@ class GazeDataset(Dataset):
                 gaze_x,
                 gaze_y,
                 inout,
+                text5,
+                text10
             ) = self.y_train.iloc[index]
             gaze_inside = bool(inout)
 
@@ -196,6 +207,14 @@ class GazeDataset(Dataset):
             x_min, y_min, x_max, y_max = bbox
             gaze_x, gaze_y = gaze
             width, height = size
+            center_rate = random.choice([2,3,4])
+            x_center_norm = round((x_min + x_max) / (2 * width), center_rate)
+            y_center_norm = round((y_min + y_max) / (2 * height), center_rate)
+            text = "head position: " + str(x_center_norm) + " " + str(y_center_norm)
+        else:
+            x_center_norm = round((x_min + x_max) / (2 * width), 3)
+            y_center_norm = round((y_min + y_max) / (2 * height), 3)            
+            text = text10
 
         head_channel = utils.get_head_box_channel(
             x_min,
@@ -253,10 +272,11 @@ class GazeDataset(Dataset):
                 "head_channels": head_channel,
                 "heatmaps": gaze_heatmap,
                 "gazes": torch.FloatTensor([gaze_x, gaze_y]),
-                "bbox": torch.FloatTensor([x_min, y_min, x_max, y_max]),
+                "bbox": torch.FloatTensor([(x_max + x_min) / (2 * width), (y_max + y_min) / (2 * height), (x_max-x_min) / width, (y_max-y_min) / height]),
                 "gaze_inouts": torch.FloatTensor([gaze_inside]),
                 "imsize": imsize,
                 "image_path": path,
+                "texts": text,
             }
             if self.mask_generator is not None:
                 out_dict["image_masks"] = image_mask
@@ -267,10 +287,12 @@ class GazeDataset(Dataset):
                 "head_channels": head_channel,
                 "heatmaps": gaze_heatmap,
                 "gazes": cont_gaze,
-                "bbox": torch.FloatTensor([x_min, y_min, x_max, y_max]),
+                "bbox": torch.FloatTensor([(x_max + x_min) / (2 * width), (y_max + y_min) / (2 * height), (x_max-x_min) / width, (y_max-y_min) / height]),
+                "bbox_raw": torch.FloatTensor([x_min, y_min, x_max, y_max]),
                 "gaze_inouts": torch.FloatTensor([gaze_inside]),
                 "imsize": imsize,
                 "image_path": path,
+                "texts": text,
             }
 
     def __len__(self):

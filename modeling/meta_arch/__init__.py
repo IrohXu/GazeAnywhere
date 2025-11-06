@@ -1,2 +1,4 @@
 from .gaze_modeling_mapper import GazeModelMapper
 from .anygaze_modeling_mapper import AnyGazeModelMapper
+from .detr_modeling_mapper import DETRModelMapper
+from .owlvit_modeling_mapper import OWLViTModelMapper

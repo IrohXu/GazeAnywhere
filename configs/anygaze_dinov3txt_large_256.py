@@ -8,7 +8,7 @@ from modeling import backbone, meta_arch, criterion
 from detectron2.config import LazyCall as L
 
 num_gpu = device_count()
-ins_per_iter = 256
+ins_per_iter = 128
 len_dataset = 54947
 num_epoch = 50
 
@@ -27,7 +27,7 @@ model.device = "cuda"
 model.freeze_backbone = True
 model.inout = True
 model.patch_size = 16
-model.dim = 512
+model.dim = 256
 # dataloader
 dataloader = dataloader.anygaze_dataset
 dataloader.train.train_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets"

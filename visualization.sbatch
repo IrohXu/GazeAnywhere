@@ -4,10 +4,10 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --ntasks=1 
 #SBATCH --job-name="asd_gaze"
-#SBATCH --partition=HCESC-L40S-normal
+#SBATCH --partition=HCESC-H100-normal
 #SBATCH --gres=gpu:1
 #SBATCH --mem=128g
-#SBATCH --output=./visualization.log
+#SBATCH --output=./visualization_dinov3.log
 
 source /projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/etc/profile.d/conda.sh
 export PATH=/projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/bin:$PATH
@@ -25,8 +25,30 @@ nvidia-smi
 #   --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/all_gaze_dinov3_large/model_final.pth \
 #   --use_dark_inference
 
-python tools/visualize_on_gazefollow2.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/childgaze_gaze_dinov3_large.py \
-  --output_path /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization_child_large \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/childgaze_gaze_dinov3_large/model_final.pth \
-  --use_dark_inference
+# python tools/visualize_on_gazefollow2.py \
+  # --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/childgaze_gaze_dinov3_large.py \
+  # --output_path /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization_child_large \
+  # --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/childgaze_gaze_dinov3_large/model_final.pth \
+  # --use_dark_inference
+
+# python tools/visualize_on_gazefollow3.py \
+#   --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_siglip2_large.py \
+#   --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/siglip2 \
+#   --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_siglip2_large/model_final.pth \
+#   --use_dark_inference
+
+# python tools/visualize_on_gazefollow3.py \
+#   --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/childgaze_dinov3txt_large.py \
+#   --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/256 \
+#   --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_256/model_final.pth \
+#   --use_dark_inference
+
+# python tools/visualize_on_detr.py \
+#   --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/owl_siglip2_large.py \
+#   --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/siglip2_owl \
+#   --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/owl_siglip2_large/model_0002144.pth
+
+python tools/visualize_on_gazefollow3.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept.py \
+  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/anygaze_dinov3txt_large_text_concept \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept/model_final.pth

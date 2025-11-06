@@ -8,32 +8,31 @@ from modeling import backbone, meta_arch, criterion
 from detectron2.config import LazyCall as L
 
 num_gpu = device_count()
-ins_per_iter = 256
-len_dataset = 54947
-num_epoch = 50
+ins_per_iter = 128
+len_dataset = 172232
+num_epoch = 25
 
-model = L(meta_arch.AnyGazeModelMapper)()
+model = L(meta_arch.OWLViTModelMapper)()
 model.backbone = L(backbone.build_backbone_dinov3txt)(
     name="dinov3_large"
 )
 model.tokenizer = L(backbone.build_tokenizer_dinov3txt)()
-model.criterion = L(criterion.GazeMapperCriterion)()
+model.criterion = L(criterion.DETRMapperCriterion)()
 # model
 # model.backbone.layerscale_init = 1
 # model.backbone.mask_k_bias = True
 # model.backbone.n_storage_tokens = 4
-model.criterion.use_focal_loss = True
 model.device = "cuda"
 model.freeze_backbone = True
 model.inout = True
 model.patch_size = 16
-model.dim = 512
+model.dim = 256
 # dataloader
 dataloader = dataloader.anygaze_dataset
 dataloader.train.train_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets"
 dataloader.val.val_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets"
-dataloader.train.train_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_train_annotations.txt"
-dataloader.val.val_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_test_annotations_gazefollow.txt"
+dataloader.train.train_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_pseudo_annotations.txt"
+dataloader.val.val_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/gazefollow_test_pseudo_annotations.txt"
 dataloader.train.batch_size = ins_per_iter // num_gpu
 dataloader.train.num_workers = dataloader.val.num_workers = 14
 dataloader.train.distributed = num_gpu > 1

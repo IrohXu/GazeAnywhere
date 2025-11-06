@@ -1,1 +1,3 @@
 from .gaze_mapper_criterion import GazeMapperCriterion
+from .detr_mapper_criterion import DETRMapperCriterion
+from .anygaze_mapper_criterion import AnyGazeMapperCriterion

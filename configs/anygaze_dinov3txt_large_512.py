@@ -8,7 +8,7 @@ from modeling import backbone, meta_arch, criterion
 from detectron2.config import LazyCall as L
 
 num_gpu = device_count()
-ins_per_iter = 256
+ins_per_iter = 128
 len_dataset = 54947
 num_epoch = 50
 

@@ -101,9 +101,10 @@ class DINOTxt(nn.Module):
         image: torch.Tensor,
         normalize: bool = False,
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        features, patch_tokens, backbone_patch_tokens = self.visual_model(image)
+        features, class_tokens, patch_tokens, backbone_patch_tokens = self.visual_model(image)
         return (
             F.normalize(features, dim=-1) if normalize else features,
+            class_tokens,
             patch_tokens,
             backbone_patch_tokens,
         )
@@ -135,17 +136,25 @@ class DINOTxt(nn.Module):
         text: torch.Tensor,
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         text_features, text_patch_tokens = self.encode_text(text, normalize=True)
-        image_features, patch_tokens, backbone_patch_tokens = (
+        image_features, class_tokens, patch_tokens, backbone_patch_tokens = (
             self.encode_image_with_patch_tokens(image, normalize=True)
         )
-        return (
-            image_features,
-            text_features,
-            self.logit_scale.exp(),
-            patch_tokens,
-            backbone_patch_tokens,
-            text_patch_tokens
-        )
+
+        outputs = {}
+        outputs["img_feat"] = patch_tokens
+        outputs["text_feat"] = text_patch_tokens
+        outputs["text_emb"] = text_features
+        outputs["img_emb"] = class_tokens
+
+        return outputs
+        # return (
+        #     image_features,
+        #     text_features,
+        #     self.logit_scale.exp(),
+        #     patch_tokens,
+        #     backbone_patch_tokens,
+        #     text_patch_tokens
+        # )
 
 
 def vit_large(patch_size=16, **kwargs):
@@ -204,6 +213,7 @@ def build_backbone_dinov3txt(name: Literal["dinov3_large"], **kwargs):
         "dinov3_large": vit_large,
     }
     return vit_dict[name](**kwargs)
+
 
 def build_tokenizer_dinov3txt(bpe_path: Optional[str] = None):
     if bpe_path is None:

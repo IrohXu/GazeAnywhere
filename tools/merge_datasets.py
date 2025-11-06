@@ -10,8 +10,9 @@ gazefollow_training_path = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_
 videoattentiontarget_training_dir = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/videoattentiontarget/annotations/train"
 childplay_training_path = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/child_play_train.csv"
 childplay_val_path = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/child_play_val.csv"
+childplay_test_path = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/child_play_test.csv"
 
-output_path = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/train_annotations_childplay.txt"
+output_path = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/test_annotations_childplay.txt"
 
 output_dict = {
     "path": [],
@@ -219,10 +220,12 @@ def process_videoattentiontarget(anno_root):
                 output_dict["meta1"].append(meta1)
                 idx += 1
 
-process_gazefollow(gazefollow_training_path)
-process_videoattentiontarget(videoattentiontarget_training_dir)
-process_childplay(childplay_training_path)
-process_childplay(childplay_val_path)
+# process_gazefollow(gazefollow_training_path)
+# process_videoattentiontarget(videoattentiontarget_training_dir)
+# process_childplay(childplay_training_path)
+# process_childplay(childplay_val_path)
+
+process_childplay(childplay_test_path)
 
 idx = 1
 for i in range(len(output_dict["idx"])):
