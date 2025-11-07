@@ -48,7 +48,14 @@ nvidia-smi
 #   --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/siglip2_owl \
 #   --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/owl_siglip2_large/model_0002144.pth
 
+# python tools/visualize_on_gazefollow3.py \
+#   --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept.py \
+#   --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/anygaze_dinov3txt_large_text_concept \
+#   --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept/model_final.pth
+
+
 python tools/visualize_on_gazefollow3.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept.py \
-  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/anygaze_dinov3txt_large_text_concept \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept/model_final.pth
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_512.py \
+  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/anygaze_dinov3txt_large_text_concept_512 \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_512/model_final.pth
+
