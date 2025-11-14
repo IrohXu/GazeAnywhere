@@ -9,7 +9,7 @@ from detectron2.config import LazyCall as L
 
 num_gpu = device_count()
 ins_per_iter = 128
-len_dataset = 119611
+len_dataset = 119614
 num_epoch = 50
 
 model = L(meta_arch.AnyGazeModelMapper)()
@@ -47,7 +47,7 @@ dataloader.train.max_scene_patches_ratio = 0.5
 dataloader.val.batch_size = 32
 dataloader.val.distributed = False
 # train
-train.init_checkpoint = "output/owl_dinov3txt_large/model_0028244.pth"
+train.init_checkpoint = "pretrained/dinov3_vitl16_dinotxt.pth"
 train.output_dir = join("./output", basename(__file__).split(".")[0])
 train.max_iter = len_dataset * num_epoch // ins_per_iter
 train.log_period = len_dataset // (ins_per_iter * 10)

@@ -36,6 +36,8 @@ def images_to_video(
     image_paths: List[str],
     out_path: str,
     fps: int = 5,
+    width: int = 640,
+    height: int = 360,
     codec: str = "mp4v",
     resize_to_first: bool = True
 ):
@@ -44,12 +46,13 @@ def images_to_video(
 
     # Sort images by numeric key
     image_paths = sorted(image_paths, key=extract_numeric_key)
+    image_paths = image_paths[::6]  # For testing, select every 2nd image
 
     # Read first image to get frame size
     first = cv2.imread(image_paths[0])
     if first is None:
         raise RuntimeError(f"Failed to read first image: {image_paths[0]}")
-    height, width = first.shape[:2]
+    # height, width = first.shape[:2]
 
     # Set up video writer
     fourcc = cv2.VideoWriter_fourcc(*codec)

@@ -28,14 +28,10 @@ class Siglip2Tokenizer():
         self.tokenizer_name = tokenizer_name
         self.device = device
         self.dtype = torch.float16 if dtype == "float16" else torch.float32
-        
-        self.load_model()
-    
-    def load_model(self):
         self.tokenizer = AutoTokenizer.from_pretrained(self.tokenizer_name)
 
     def tokenize(self, texts):
-        return self.tokenizer(texts, padding="max_length", max_length=64, return_tensors="pt")
+        return self.tokenizer(texts, padding="max_length", truncation=True, max_length=64, return_tensors="pt")['input_ids']
 
 
 class Siglip2(Backbone):
@@ -69,7 +65,7 @@ class Siglip2(Backbone):
         image_forward_outs = self.vision_tower(images.to(device=self.device, dtype=self.dtype), output_hidden_states=True)
         image_features = self.feature_select(image_forward_outs).to(images.dtype)
         
-        text_forward_outs = self.text_tower(texts['input_ids'].to(device=self.device))
+        text_forward_outs = self.text_tower(texts.to(device=self.device))
         text_features = text_forward_outs.last_hidden_state
         
         outputs = {}
@@ -81,6 +77,8 @@ class Siglip2(Backbone):
         # )
         outputs["img_feat"] = image_features
         outputs["text_feat"] = text_features
+        outputs["text_emb"] = text_forward_outs.pooler_output
+        outputs["img_emb"] = image_forward_outs.pooler_output
 
         return outputs
 

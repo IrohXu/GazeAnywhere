@@ -49,6 +49,11 @@ python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_text_co
 python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_text_concept_1024.py --num-gpu 2
 ```
 
+```
+python -u tools/train.py --config-file ./configs/anygaze_siglip2_large_text_concept.py --num-gpu 1
+```
+
+
 
 ## Evaluation
 
@@ -74,4 +79,20 @@ python tools/eval_on_videoattentiontarget2.py \
   --use_dark_inference
 ```
 
+```
+python tools/visualize_on_gazefollow5.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_deployment.py \
+  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/anygaze_dinov3txt_large_text_concept_deployment \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth
+```
 
+python tools/latency_calculate.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_vat_latency.py \
+  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/anygaze_dinov3txt_large_text_concept_latency \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth
+
+
+python tools/latency_calculate.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_clip_large_text_concept_vat_latency.py \
+  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/anygaze_clip_large_text_concept_latency \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_clip_large_text_concept_256/model_final.pth

@@ -63,6 +63,8 @@ class AnyGazeModelMapper(nn.Module):
         criterion: nn.Module,
         device: Union[torch.device, str] = "cuda",
         freeze_backbone: bool = True,
+        freeze_visual_encoder: bool = True,
+        freeze_text_encoder: bool = True,
         dim: int = 256,
         inout: bool = True,
         fusion_layers: int = 3,
@@ -98,6 +100,14 @@ class AnyGazeModelMapper(nn.Module):
         if freeze_backbone:
             for param in self.backbone.parameters():
                 param.requires_grad = False
+            
+            if freeze_visual_encoder == False:
+                for param in self.backbone.visual_model.parameters():
+                    param.requires_grad = True
+            if freeze_text_encoder == False:
+                for param in self.backbone.text_model.parameters():
+                    param.requires_grad = True
+                
         
         self.num_head_queries = num_head_queries
         
@@ -222,7 +232,7 @@ class AnyGazeModelMapper(nn.Module):
     def preprocess_inputs(self, batched_inputs: Dict[str, torch.Tensor]):
         texts = batched_inputs["texts"]
         texts = self.tokenizer.tokenize(texts)
-        
+                
         # --- MODIFIED --- Ensure text tokens are padded/truncated to max_text_seq
         B, N_txt = texts.shape
         if N_txt > self.max_text_seq:
