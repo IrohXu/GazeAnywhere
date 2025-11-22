@@ -291,6 +291,8 @@ class AnyGazeTextConceptDataset(Dataset):
                 pose,
                 size_weights = {1: 0, 2: 0, 3: 0, 4: 1}
             )
+            # text = ""
+            # text = "pose: " + str(pose)
 
         head_channel = utils.get_head_box_channel(
             x_min,
@@ -332,13 +334,13 @@ class AnyGazeTextConceptDataset(Dataset):
                     )
             gaze_heatmap /= num_valid
         else:
-            # if gaze_inside:
-            gaze_heatmap = self.draw_labelmap(
-                gaze_heatmap,
-                [gaze_x * self.output_size, gaze_y * self.output_size],
-                3,
-                type="Gaussian",
-            )
+            if gaze_inside:
+                gaze_heatmap = self.draw_labelmap(
+                    gaze_heatmap,
+                    [gaze_x * self.output_size, gaze_y * self.output_size],
+                    3,
+                    type="Gaussian",
+                )
 
         imsize = torch.IntTensor([width, height])
 

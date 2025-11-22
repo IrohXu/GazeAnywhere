@@ -63,6 +63,8 @@ class AnyGazeModelMapper(nn.Module):
         criterion: nn.Module,
         device: Union[torch.device, str] = "cuda",
         freeze_backbone: bool = True,
+        freeze_visual_encoder: bool = True,
+        freeze_text_encoder: bool = True,
         dim: int = 256,
         inout: bool = True,
         fusion_layers: int = 3,
@@ -98,6 +100,14 @@ class AnyGazeModelMapper(nn.Module):
         if freeze_backbone:
             for param in self.backbone.parameters():
                 param.requires_grad = False
+            
+            if freeze_visual_encoder == False:
+                for param in self.backbone.visual_model.parameters():
+                    param.requires_grad = True
+            if freeze_text_encoder == False:
+                for param in self.backbone.text_model.parameters():
+                    param.requires_grad = True
+                
         
         self.num_head_queries = num_head_queries
         
@@ -217,12 +227,89 @@ class AnyGazeModelMapper(nn.Module):
         # Inference
                 
         return heatmap_preds, inout_preds.sigmoid(), pred_boxes
-        # return heatmap_preds, inout_preds.sigmoid()
+    
+    
+    def inference(self, scenes, texts):
+        
+        texts = self.tokenizer.tokenize(texts)
+                
+        # --- MODIFIED --- Ensure text tokens are padded/truncated to max_text_seq
+        B, N_txt = texts.shape
+        if N_txt > self.max_text_seq:
+            texts = texts[:, :self.max_text_seq]
+        elif N_txt < self.max_text_seq:
+            # Assuming 0 is the padding token index
+            padding = torch.zeros((B, self.max_text_seq - N_txt), dtype=torch.long, device=texts.device)
+            texts = torch.cat([texts, padding], dim=1)
+            
+        scenes = scenes.to(self.device)
+        texts = texts.to(self.device)
+        
+        B = scenes.size(0)
+        
+        # Get out-dict
+        x = self.backbone(
+            scenes,
+            texts,
+        )
+        
+        out = self.backbone(scenes, texts)
+        img_feats = out["img_feat"]          # (B, N_img, C_in)
+        txt_feats = out["text_feat"]         # (B, N_txt, C_in)
+        txt_emb_feats = out["text_emb"]      # (B, C_txt_in)
+        img_emb_feats= out["img_emb"]      # (B, C_img_in)
+        
+        # project
+        img_feats = self.linear(img_feats)        # (B, N_img, dim)
+        img_emb_feats = self.linear(img_emb_feats)  # (B, dim)
+
+        txt_feats = self.linear_txt(txt_feats)  # (B, N_txt, dim)
+        txt_emb_feats = self.linear_txt(txt_emb_feats)  # (B, dim)
+        
+        # image pos (assumes N_img == mask_size*mask_size)
+        img_pos = self.pos_embed.flatten(1).permute(1, 0).unsqueeze(0)  # (1, N_img, dim)
+        img_feats = img_feats + img_pos
+        
+        # text pos
+        txt_pos = self.text_pos_embed.permute(1, 0).unsqueeze(0)  # (1, N_txt, dim)
+        txt_feats = txt_feats + txt_pos
+        
+        base_head = self.head_queries.weight.unsqueeze(0).repeat(B, 1, 1)   # (B, 1, dim)
+        head_token = base_head + txt_emb_feats.unsqueeze(1)   
+
+        base_inout = self.inout_token.weight.unsqueeze(dim=0).repeat(B, 1, 1)
+        inout_token = base_inout + img_emb_feats.unsqueeze(1)                 # (B, 1, dim)
+
+        if self.inout:
+            feats = torch.cat([head_token, txt_feats, img_feats, inout_token], dim=1)
+        else:
+            feats = torch.cat([head_token, txt_feats, img_feats], dim=1)
+
+        feats = self.transformer(feats)
+        
+        bbox_token = feats[:, 0, :]           # (B, dim)
+        pred_boxes = self.head_bbox_head(bbox_token)  # (B, 4)
+        
+        if self.inout:
+            inout_tokens = feats[:, -1, :] 
+            inout_preds = self.inout_head(inout_tokens).squeeze(dim=-1)
+            # inout_preds = utils.split_tensors(inout_preds, num_ppl_per_img)
+            feats = feats[:, 1+txt_feats.shape[1]:-1, :] # slice off inout tokens from scene tokens
+        
+        feats = feats.reshape(feats.shape[0], self.mask_size, self.mask_size, feats.shape[2]).permute(0, 3, 1, 2) # b (h w) c -> b c h w        
+        feats = self.heatmap_head(feats)
+        
+        # feats = self.heatmap_head(feats).squeeze(dim=1)
+        feats = torchvision.transforms.functional.resize(feats, self.out_size)
+        heatmap_preds = feats
+                            
+        return heatmap_preds, inout_preds.sigmoid(), pred_boxes
+
 
     def preprocess_inputs(self, batched_inputs: Dict[str, torch.Tensor]):
         texts = batched_inputs["texts"]
         texts = self.tokenizer.tokenize(texts)
-        
+                
         # --- MODIFIED --- Ensure text tokens are padded/truncated to max_text_seq
         B, N_txt = texts.shape
         if N_txt > self.max_text_seq:

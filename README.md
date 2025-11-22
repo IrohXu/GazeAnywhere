@@ -5,165 +5,155 @@
 
   ```
   conda env create -f environment.yml
-  conda activate GestureTarget
+  conda activate anygaze
   ```
+
 * Install [detectron2](https://github.com/facebookresearch/detectron2) , follow its [documentation](https://detectron2.readthedocs.io/en/latest/), or
 
   ```
   pip install "git+https://github.com/facebookresearch/detectron2.git@017abbfa5f2c2a2afa045200c2af9ccf2fc6227f#egg=detectron2"
   ```
 
-
 ## Train/Eval
 ### Pre-training/Fine-tuning/Testing Dataset Preprocessing
 
-You should prepare GazeFollow and GestureTarget for training.
-
-* Get [GazeFollow](https://www.dropbox.com/s/3ejt9pm57ht2ed4/gazefollow_extended.zip?dl=0).
-* Use `./scripts/gen_gazefollow_head_masks.py` to generate head masks.
+Use our internal dataset.    
 
 ### Pretrained Model
 
-* Get [DINOv2](https://github.com/facebookresearch/dinov2) pretrained ViT-S/ViT-B/ViT-L/ViT-G.
-* Or you could download and preprocess pretrained weights by
+DINOv3-txt:
 
-  ```
-  mkdir pretrained && cd pretrained
-  wget https://dl.fbaipublicfiles.com/dinov2/dinov2_vits14/dinov2_vits14_pretrain.pth
-  ```
-* Preprocess the model weights with `./scripts/convert_pth.py` to fit Detectron2 format.      
-* Pre-train the model by
-  
-  ```
-  python -u tools/train.py --config-file ./configs/gazefollow_gaze_vit_small.py --num-gpu 1
-  ```
+```
+/projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/pretrained/dinov3_vitl16_dinotxt.pth
+```
+
+### Training    
+
+```
+python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_text_concept_64.py --num-gpu 2
+```
+
+```
+python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_text_concept_128.py --num-gpu 2
+```
+
+```
+python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_text_concept_256.py --num-gpu 2
+```
+
+```
+python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_text_concept_512.py --num-gpu 2
+```
+
+```
+python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_text_concept_1024.py --num-gpu 2
+```
+
+```
+python -u tools/train.py --config-file ./configs/anygaze_siglip2_large_text_concept.py --num-gpu 1
+```
+
+
 
 ## Evaluation
 
-TODO
 
 ```
-python tools/eval_on_gazefollow.py --config_file ./configs/gazefollow_gaze_vit_large.py --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/checkpoints/dinov2_gaze_vit_large.pth --use_dark_inference
-```
-
-## Deployment
-Check your GPU server IP, and replace 172.29.130.184 to your IP address.   
-```
-ip addr show
-```
-
-## Launch Child Head Detection Model
-#### Debug and ru-load mode:    
-```
-uvicorn owlv2_api:app --host 172.29.130.184 --port 8001 --reload --log-level debug
-```
-
-#### Normal mode:    
-```
-uvicorn owlv2_api:app --host 172.29.130.184 --port 8001
-```
-
-## Launch Gaze Detection Model  
-```
-uvicorn gazemodel_api:app --host 172.29.130.184 --port 8002
-```
-
-## Test
-```
-python test.py
-```
-
-## Evaluation
-
-```
-python tools/eval_on_gazefollow.py --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/gazefollow_gaze_vit_base.py --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/checkpoints/dinov2_gaze_vit_base.pth --use_dark_inference
-```
-
-```
-python tools/visualize_on_gazefollow.py --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/gazefollow_gaze_vit_small.py --output_path /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/childgaze_gaze_vit_small/model_0003935.pth --use_dark_inference
-```
-
-```
-python tools/convert_visualization_to_video.py --input /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization_child_large/visualization/data/PGT019_2019_12_04_T1_panasonic_ESCS_BOSCC_merged_16119_19988 --output /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/video_output/PGT019_2019_12_04_T1_panasonic_ESCS_BOSCC_merged_16119_19988.mp4
-```
-
-bash ./convert_visualization_video.bash /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization_child_large/visualization/data /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/video_output
-
-```
-/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/ChildGaze/visualization_pre/visualization/data/PWC007_2019_02_23_T1_panasonic_ESCS_merged_12129_15508
-```
-
-## Reference
-
-TODO
-
-
-## DINOv3
-
-```
-python -u tools/train.py --config-file ./configs/gazefollow_gaze_dinov3_small.py --num-gpu 1
-```
-
-
-```
-python scripts/convert_pth.py -s /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/pretrained/dinov3_vitl16_dinotxt-a442d8f5.pth -d /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/pretrained/dinov3_vitl16_dinotxt.pth
-```
-
-```
-python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large.py --num-gpu 1
-```
-
-
-
-python tools/eval_on_gazefollow.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large.py \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large/model_final.pth \
+python tools/eval_on_gazefollow2.py \
+  --config_file ./configs/anygaze_dinov3txt_large_text_concept.py \
+  --model_weights ./output/anygaze_dinov3txt_large_text_concept/model_final.pth \
   --use_dark_inference
+```
 
-
-python tools/visualize_on_gazefollow2.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large.py \
-  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large/model_final.pth \
+```
+python tools/eval_on_videoattentiontarget2.py \
+  --config_file ./configs/anygaze_dinov3txt_large_text_concept_vat.py \
+  --model_weights ./output/anygaze_dinov3txt_large_text_concept/model_final.pth \
   --use_dark_inference
+```
 
-python tools/visualize_on_gazefollow3.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/childgaze_gaze_dinov3_large.py \
-  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/old_childgaze \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/childgaze_gaze_dinov3_large/model_final.pth \
+```
+python tools/eval_on_videoattentiontarget2.py \
+  --config_file ./configs/anygaze_dinov3txt_large_text_concept_childplay.py \
+  --model_weights ./output/anygaze_dinov3txt_large_text_concept/model_final.pth \
   --use_dark_inference
+```
+
+```
+python tools/visualize_on_gazefollow5.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_deployment.py \
+  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/anygaze_dinov3txt_large_text_concept_deployment \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth
+```
+
+python tools/latency_calculate.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_vat_latency.py \
+  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/anygaze_dinov3txt_large_text_concept_latency \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth
+
+
+python tools/latency_calculate.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_clip_large_text_concept_vat_latency.py \
+  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/anygaze_clip_large_text_concept_latency \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_clip_large_text_concept_256/model_final.pth
 
 
 
 ```
-python -u tools/train.py --config-file ./configs/anygaze_siglip2_large.py --num-gpu 4
+python tools/visualize_on_gazefollow5_new.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_256.py \
+  --input_path /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/WeillCornell_PedabyteProject_processed/for_annotations/PWC/PWC054_2019_11_13_T1_panasonic_ESCS_merged_9715_14975/clipped_frames \
+  --text "attribute: a child with gold brown hair; position: center left of the image" \
+  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC054_2019_11_13_T1_panasonic_ESCS_merged_9715_14975 \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth
 ```
 
 
 ```
-python -u tools/train.py --config-file ./configs/detr_dinov3txt_large.py --num-gpu 1
+python tools/visualize_on_gazefollow5_new.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_256.py \
+  --input_path /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/WeillCornell_PedabyteProject_processed/for_annotations/PWC/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116/clipped_frames \
+  --text "attribute: child with black hair; position: center of the image" \
+  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116 \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth
+```
+
+```
+python tools/convert_visualization_to_video.py \
+  --input /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC022_2019_06_13_T1_panasonic_ESCS_merged_35448_40627 \
+  --output /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC022_2019_06_13_T1_panasonic_ESCS_merged_35448_40627.mp4 \
+  --fps 30
+```
+
+```
+python tools/cut_video.py /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC022_2019_06_13_T1_panasonic_ESCS_merged_35448_40627.mp4 -s 45 -e 55 -o sample_1.mp4
+```
+
+```
+python tools/convert_visualization_to_video.py \
+  --input /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC007_2019_02_23_T1_panasonic_ESCS_merged_43518_49870 \
+  --output /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC007_2019_02_23_T1_panasonic_ESCS_merged_43518_49870.mp4 \
+  --fps 30
+```
+
+```
+python tools/cut_video.py /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC007_2019_02_23_T1_panasonic_ESCS_merged_43518_49870.mp4 -s 74 -e 83 -o sample_3.mp4
 ```
 
 
-python tools/visualize_on_detr.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/owl_dinov3txt_large.py \
-  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/dinov3txt_owl \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/owl_dinov3txt_large/model_0001286.pth
-
-python tools/visualize_on_detr.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/owl_siglip2_large.py \
-  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/siglip2_owl \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/owl_siglip2_large/model_0004289.pth
-
+```
+python tools/convert_visualization_to_video.py \
+  --input /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116 \
+  --output /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116.mp4 \
+  --fps 30
+```
 
 
 ```
-python -u tools/train.py --config-file ./configs/owl_siglip2_large.py --num-gpu 1
+python tools/cut_video.py /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116.mp4 -s 142 -e 148 -o sample_4.mp4
 ```
 
-python -u tools/train.py --config-file ./configs/owl_dinov3txt_large.py --num-gpu 1
 
-
-python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_visual_concept.py --num-gpu 1
-
-
+```
+python tools/merge_videos.py -o merged.mp4 sample_1.mp4 sample_2.mp4 sample_3.mp4 sample_4.mp4
+```

@@ -9,8 +9,8 @@ from detectron2.config import LazyCall as L
 
 num_gpu = device_count()
 ins_per_iter = 64
-len_dataset = 74732
-num_epoch = 25
+len_dataset = 119614
+num_epoch = 30
 
 model = L(meta_arch.AnyGazeModelMapper)()
 model.backbone = L(backbone.build_backbone_dinov3txt)(

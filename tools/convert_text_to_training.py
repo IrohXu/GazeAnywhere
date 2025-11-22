@@ -35,11 +35,11 @@ text_annotations_paths = [
 output_path = '/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_train_annotations_new.txt'
 
 # raw_annotations_path = '/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/videoattentiontarget_test_annotations.txt'
-# raw_annotations_path = '/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/test_annotations_childgaze.txt'
+# raw_annotations_path = '/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/test_annotations_childplay.txt'
 # text_annotations_paths = [
-    # "/projects/illinois/eng/cs/jrehg/users/houzey2/CVPR2026/Gemini_API/New_Annotation/test_gf_all.jsonl",
-    # "/projects/illinois/eng/cs/jrehg/users/houzey2/CVPR2026/Gemini_API/New_Annotation/test_cp_all.jsonl",
-    # "/projects/illinois/eng/cs/jrehg/users/houzey2/CVPR2026/Gemini_API/New_Annotation/test_vat_all.jsonl"
+#     # "/projects/illinois/eng/cs/jrehg/users/houzey2/CVPR2026/Gemini_API/New_Annotation/test_gf_all.jsonl",
+#     # "/projects/illinois/eng/cs/jrehg/users/houzey2/CVPR2026/Gemini_API/New_Annotation/test_cp_all.jsonl",
+#     # "/projects/illinois/eng/cs/jrehg/users/houzey2/CVPR2026/Gemini_API/New_Annotation/test_vat_all.jsonl"
 # ]
 
 # output_path = '/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_videoattentiontarget_test_annotations.txt'
@@ -119,6 +119,12 @@ for idx, row in df.iterrows():
         continue
 
     if text_dict[idx]["attribute"] == "" or text_dict[idx]["position"] == "" or text_dict[idx]["action"] == "" or text_dict[idx]["pose"] == "":
+        continue
+     
+    if text_dict[idx]["action"] == "none" and text_dict[idx]["pose"] == "none":
+        continue
+    
+    if text_dict[idx]["attribute"] == "none" and text_dict[idx]["position"] == "none":
         continue
     
     # if '[PARSE_ERROR]' in text_dict[idx]["phrase5"] or '[PARSE_ERROR]' in text_dict[idx]["desc10"]:

@@ -8,7 +8,8 @@ from PIL import Image
 datasets_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets"
 childgaze_training_path = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/childgaze/test_annotations_release.txt"
 
-output_path = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/test_annotations_childgaze.txt"
+# output_path = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/test_annotations_childgaze.txt"
+output_path = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_childgaze_test_annotations.txt"
 
 output_dict = {
     "path": [],
@@ -23,8 +24,10 @@ output_dict = {
     "source": [],
     "meta0": [],
     "meta1": [],
-    "text5" : [],
-    "text10" : [],
+    "attribute" : [],
+    "position": [],
+    "action": [],
+    "pose": []
 }
 
 
@@ -44,11 +47,13 @@ def process_childgaze(anno_root):
         "head_y_min",
         "head_x_max",
         "head_y_max",
-        # "inout",
+        "inout",
         "meta0",
         "meta1",
-        "text5",
-        "text10"
+        "attribute",
+        "position",
+        "action",
+        "pose"
     ]
     df = pd.read_csv(
         anno_root,
@@ -70,13 +75,27 @@ def process_childgaze(anno_root):
         head_y_min = row["head_y_min"]
         head_x_max = row["head_x_max"]
         head_y_max = row["head_y_max"]
-        inout = 1
+        inout = row["inout"]
         source = "childgaze"
         meta0 = row["meta0"]
         meta1 = row["meta1"]
-        text5 = "a child"
-        text10 = "a child"
-
+        attribute = "none"
+        position = "none"
+        action = "none"
+        pose = "none"
+        if "PGT019" in path:
+            attribute = "yellow hair boy"
+            position = "center"
+        elif "PWC007" in path:
+            attribute = "black hair girl"
+            position = "center left"
+        elif "PWC022" in path:
+            attribute = "yellow hair girl"
+            position = "center left"
+        elif "PWC041" in path:
+            attribute = "black hair boy"
+            position = "center"
+            
         output_dict["path"].append(path)
         output_dict["idx"].append(idx)
         output_dict["gaze_x"].append(gaze_x)
@@ -85,12 +104,14 @@ def process_childgaze(anno_root):
         output_dict["head_y_min"].append(head_y_min)
         output_dict["head_x_max"].append(head_x_max)
         output_dict["head_y_max"].append(head_y_max)
-        output_dict["inout"].append(1)
+        output_dict["inout"].append(inout)
         output_dict["source"].append(source)
         output_dict["meta0"].append(meta0)
         output_dict["meta1"].append(meta1)
-        output_dict["text5"].append(text5)
-        output_dict["text10"].append(text10)
+        output_dict["attribute"].append(attribute)
+        output_dict["position"].append(position)
+        output_dict["action"].append(action)
+        output_dict["pose"].append(pose)
     
 
 process_childgaze(childgaze_training_path)
@@ -101,5 +122,5 @@ for i in range(len(output_dict["idx"])):
     idx += 1
     
 df = pd.DataFrame(output_dict)
-df.to_csv(output_path, index=False)
+df.to_csv(output_path, index=False, sep=";")
 

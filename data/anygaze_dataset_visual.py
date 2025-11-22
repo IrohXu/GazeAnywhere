@@ -46,12 +46,14 @@ class AnyGazeVisualConceptDataset(Dataset):
                 "source",
                 "meta0",
                 "meta1",
-                "text5",
-                "text10",
+                "attribute",
+                "position",
+                "action",
+                "pose",
             ]
             df = pd.read_csv(
                 anno_root,
-                sep=",",
+                sep=";",
                 names=column_names,
                 index_col=False,
                 encoding="utf-8-sig",
@@ -71,8 +73,10 @@ class AnyGazeVisualConceptDataset(Dataset):
                     "gaze_x",
                     "gaze_y",
                     "inout",
-                    "text5",
-                    "text10",
+                    "attribute",
+                    "position",
+                    "action",
+                    "pose",
                 ]
             ]
             self.X_train = df["path"]
@@ -91,12 +95,14 @@ class AnyGazeVisualConceptDataset(Dataset):
                 "source",
                 "meta0",
                 "meta1",
-                "text5",
-                "text10",
+                "attribute",
+                "position",
+                "action",
+                "pose",
             ]
             df = pd.read_csv(
                 anno_root,
-                sep=",",
+                sep=";",
                 names=column_names,
                 index_col=False,
                 encoding="utf-8-sig",
@@ -110,8 +116,11 @@ class AnyGazeVisualConceptDataset(Dataset):
                     "head_y_min",
                     "head_x_max",
                     "head_y_max",
-                    "text5",
-                    "text10",
+                    "inout",
+                    "attribute",
+                    "position",
+                    "action",
+                    "pose",
                 ]
             ].groupby(["path", "head_x_min"])
             self.keys = list(df.groups.keys())
@@ -156,8 +165,11 @@ class AnyGazeVisualConceptDataset(Dataset):
                 y_max = row["head_y_max"]
                 gaze_x = row["gaze_x"]
                 gaze_y = row["gaze_y"]
-                text5 = row["text5"]
-                text10 = row["text10"]
+                inout = row["inout"]
+                attribute = row["attribute"]
+                position = row["position"]
+                action = row["action"]
+                pose = row["pose"]
                 cont_gaze.append(
                     [float(gaze_x), float(gaze_y)]
                 )  # all ground truth gaze are stacked up
@@ -166,7 +178,7 @@ class AnyGazeVisualConceptDataset(Dataset):
                     [-1, -1]
                 )  # pad dummy gaze to match size for batch processing
             cont_gaze = torch.FloatTensor(cont_gaze)
-            gaze_inside = True  # always consider test samples as inside
+            gaze_inside = bool(inout)
         else:
             path = self.X_train.iloc[index]
             (
@@ -177,8 +189,10 @@ class AnyGazeVisualConceptDataset(Dataset):
                 gaze_x,
                 gaze_y,
                 inout,
-                text5,
-                text10
+                attribute,
+                position,
+                action,
+                pose
             ) = self.y_train.iloc[index]
             gaze_inside = bool(inout)
 
@@ -214,7 +228,7 @@ class AnyGazeVisualConceptDataset(Dataset):
         else:
             x_center_norm = round((x_min + x_max) / (2 * width), 3)
             y_center_norm = round((y_min + y_max) / (2 * height), 3)            
-            text = text10
+            text = "head position: " + str(x_center_norm) + " " + str(y_center_norm)
 
         head_channel = utils.get_head_box_channel(
             x_min,
