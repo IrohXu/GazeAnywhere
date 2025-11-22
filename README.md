@@ -1,4 +1,4 @@
-# AnyGaze: Gaze Target Estimation with Concepts
+# GazeAnywhere: Gaze Target Estimation Anywhere with Concepts
 
 ## Installation
 * Create a conda virtual env and activate it.
