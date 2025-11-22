@@ -13,6 +13,55 @@ from .masking import MaskGenerator
 from . import data_utils as utils
 
 
+def random_prompt(
+    attribute: str,
+    position: str,
+    action: str,
+    pose: str,
+    size_weights: dict[int, float] | None = None,
+    rng: random.Random | None = None,
+) -> str:
+    """
+    Build a randomized 'key: value' string using a random subset (size 1..4) and random order.
+    - Automatically includes 1-item and 2-item cases.
+    - Skips empty/None values.
+    - `size_weights` lets you bias how often 1/2/3/4-item prompts appear.
+      e.g., {1:1, 2:2, 3:3, 4:4} biases toward longer prompts.
+    - Pass a custom `rng` for reproducibility (e.g., rng=random.Random(42)).
+    """
+    if rng is None:
+        rng = random
+
+    fields = {
+        "attribute": attribute,
+        "position": position,
+        "action": action,
+        "pose": pose,
+    }
+
+    # keep only non-empty values
+    available_keys = [k for k, v in fields.items() if v not in (None, "", [])]
+    if not available_keys:
+        return ""
+
+    # choose subset size (1..len(available))
+    if size_weights is None:
+        # neutral: all sizes equally likely
+        size_weights = {1: 1, 2: 1, 3: 1, 4: 1}
+
+    valid_sizes = [s for s in size_weights if 1 <= s <= len(available_keys)]
+    weights = [size_weights[s] for s in valid_sizes]
+    n = rng.choices(valid_sizes, weights=weights, k=1)[0]
+
+    # pick random subset and shuffle order
+    chosen = rng.sample(available_keys, n)
+    rng.shuffle(chosen)
+
+    # format
+    parts = [f"{k}: {fields[k]}" for k in chosen]
+    return "; ".join(parts)
+
+
 class AnyGazeDataset(Dataset):
     def __init__(
         self,
@@ -25,12 +74,13 @@ class AnyGazeDataset(Dataset):
         is_train: bool = True,
         *,
         mask_generator: Optional[MaskGenerator] = None,
-        bbox_jitter: float = 0.5,
-        rand_crop: float = 0.5,
-        rand_flip: float = 0.5,
+        bbox_jitter: float = 0.0,
+        rand_crop: float = 0.0,
+        rand_flip: float = 0.0,
         color_jitter: float = 0.0,
         rand_rotate: float = 0.0,
         rand_lsj: float = 0.0,
+        visual_text_ratio: float = 0.5,
     ):
         if is_train:
             column_names = [
@@ -46,12 +96,14 @@ class AnyGazeDataset(Dataset):
                 "source",
                 "meta0",
                 "meta1",
-                "text5",
-                "text10",
+                "attribute",
+                "position",
+                "action",
+                "pose",
             ]
             df = pd.read_csv(
                 anno_root,
-                sep=",",
+                sep=";",
                 names=column_names,
                 index_col=False,
                 encoding="utf-8-sig",
@@ -71,8 +123,10 @@ class AnyGazeDataset(Dataset):
                     "gaze_x",
                     "gaze_y",
                     "inout",
-                    "text5",
-                    "text10",
+                    "attribute",
+                    "position",
+                    "action",
+                    "pose",
                 ]
             ]
             self.X_train = df["path"]
@@ -91,12 +145,14 @@ class AnyGazeDataset(Dataset):
                 "source",
                 "meta0",
                 "meta1",
-                "text5",
-                "text10",
+                "attribute",
+                "position",
+                "action",
+                "pose",
             ]
             df = pd.read_csv(
                 anno_root,
-                sep=",",
+                sep=";",
                 names=column_names,
                 index_col=False,
                 encoding="utf-8-sig",
@@ -110,8 +166,11 @@ class AnyGazeDataset(Dataset):
                     "head_y_min",
                     "head_x_max",
                     "head_y_max",
-                    "text5",
-                    "text10",
+                    "inout",
+                    "attribute",
+                    "position",
+                    "action",
+                    "pose",
                 ]
             ].groupby(["path", "head_x_min"])
             self.keys = list(df.groups.keys())
@@ -124,7 +183,8 @@ class AnyGazeDataset(Dataset):
 
         self.input_size = input_size
         self.output_size = output_size
-
+        self.visual_text_ratio = visual_text_ratio
+        
         self.draw_labelmap = (
             utils.draw_labelmap if quant_labelmap else utils.draw_labelmap_no_quant
         )
@@ -156,8 +216,11 @@ class AnyGazeDataset(Dataset):
                 y_max = row["head_y_max"]
                 gaze_x = row["gaze_x"]
                 gaze_y = row["gaze_y"]
-                text5 = row["text5"]
-                text10 = row["text10"]
+                inout = row["inout"]
+                attribute = row["attribute"]
+                position = row["position"]
+                action = row["action"]
+                pose = row["pose"]
                 cont_gaze.append(
                     [float(gaze_x), float(gaze_y)]
                 )  # all ground truth gaze are stacked up
@@ -166,7 +229,8 @@ class AnyGazeDataset(Dataset):
                     [-1, -1]
                 )  # pad dummy gaze to match size for batch processing
             cont_gaze = torch.FloatTensor(cont_gaze)
-            gaze_inside = True  # always consider test samples as inside
+            gaze_inside = bool(inout)
+            # gaze_inside = True  # always consider test samples as inside
         else:
             path = self.X_train.iloc[index]
             (
@@ -177,8 +241,10 @@ class AnyGazeDataset(Dataset):
                 gaze_x,
                 gaze_y,
                 inout,
-                text5,
-                text10
+                attribute,
+                position,
+                action,
+                pose
             ) = self.y_train.iloc[index]
             gaze_inside = bool(inout)
 
@@ -207,16 +273,30 @@ class AnyGazeDataset(Dataset):
             x_min, y_min, x_max, y_max = bbox
             gaze_x, gaze_y = gaze
             width, height = size
-            x_center_norm = round((x_min + x_max) / (2 * width), 3)
-            y_center_norm = round((y_min + y_max) / (2 * height), 3)
-            # text = "head position: " + str(x_center_norm) + " " + str(y_center_norm)
-            text = text10
-        else:
-            x_center_norm = round((x_min + x_max) / (2 * width), 3)
-            y_center_norm = round((y_min + y_max) / (2 * height), 3)
-            print("head position: " + str(x_center_norm) + " " + str(y_center_norm), text5, text10)
-            
-            text = text10
+            # center_rate = random.choice([2,3,4])
+            # x_center_norm = round((x_min + x_max) / (2 * width), center_rate)
+            # y_center_norm = round((y_min + y_max) / (2 * height), center_rate)
+            if self.visual_text_ratio < random.random():
+                text = random_prompt(
+                    attribute,
+                    position,
+                    action,
+                    pose,
+                    size_weights = {1: 0, 2: 1, 3: 1, 4: 1}
+                )
+            else:
+                center_rate = random.choice([2,3,4,5])
+                x_center_norm = round((x_min + x_max) / (2 * width), center_rate)
+                y_center_norm = round((y_min + y_max) / (2 * height), center_rate)
+                text = "visual position: " + str(x_center_norm) + " " + str(y_center_norm)
+        else:           
+            text = random_prompt(
+                attribute,
+                position,
+                action,
+                pose,
+                size_weights = {1: 0, 2: 0, 3: 0, 4: 1}
+            )
 
         head_channel = utils.get_head_box_channel(
             x_min,
@@ -258,13 +338,13 @@ class AnyGazeDataset(Dataset):
                     )
             gaze_heatmap /= num_valid
         else:
-            # if gaze_inside:
-            gaze_heatmap = self.draw_labelmap(
-                gaze_heatmap,
-                [gaze_x * self.output_size, gaze_y * self.output_size],
-                3,
-                type="Gaussian",
-            )
+            if gaze_inside:
+                gaze_heatmap = self.draw_labelmap(
+                    gaze_heatmap,
+                    [gaze_x * self.output_size, gaze_y * self.output_size],
+                    3,
+                    type="Gaussian",
+                )
 
         imsize = torch.IntTensor([width, height])
 

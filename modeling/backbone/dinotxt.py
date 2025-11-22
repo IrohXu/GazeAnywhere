@@ -11,14 +11,9 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from .src.dinov3.eval.text.text_tower import build_text_model
-from .src.dinov3.eval.text.vision_tower import build_vision_model
+from .dinotxt_modules import build_text_model, build_vision_model, TextTransformer, get_tokenizer
 
-from .src.dinov3.eval.text.dinotxt_model import DINOTxt, DINOTxtConfig
-from .src.dinov3.eval.text.text_transformer import TextTransformer
-from .src.dinov3.eval.text.tokenizer import get_tokenizer
-
-from .backbones import dinov3_vitl16, Weights as BackboneWeights, convert_path_or_url_to_url
+from .backbones import dinov3_vitl16, convert_path_or_url_to_url
 
 # from dinov3 import DinoVisionTransformer
 

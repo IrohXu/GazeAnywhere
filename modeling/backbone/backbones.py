@@ -11,7 +11,7 @@ from pathlib import Path
 
 import torch
 
-from .src.dinov3.models.vision_transformer import DinoVisionTransformer
+from .dinov3 import DinoVisionTransformer
 
 DINOV3_BASE_URL = "https://dl.fbaipublicfiles.com/dinov3"
 

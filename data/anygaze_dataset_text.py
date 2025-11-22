@@ -281,9 +281,7 @@ class AnyGazeTextConceptDataset(Dataset):
                 pose,
                 size_weights = {1: 0, 2: 1, 3: 1, 4: 1}
             )
-        else:
-            # x_center_norm = round((x_min + x_max) / (2 * width), 3)
-            # y_center_norm = round((y_min + y_max) / (2 * height), 3)            
+        else:           
             text = random_prompt(
                 attribute,
                 position,
@@ -291,8 +289,6 @@ class AnyGazeTextConceptDataset(Dataset):
                 pose,
                 size_weights = {1: 0, 2: 0, 3: 0, 4: 1}
             )
-            # text = ""
-            # text = "pose: " + str(pose)
 
         head_channel = utils.get_head_box_channel(
             x_min,

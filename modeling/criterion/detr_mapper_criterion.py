@@ -2,6 +2,7 @@ import torch
 from torch import nn
 from torchvision.ops import generalized_box_iou_loss, box_convert
 
+
 class DETRMapperCriterion(nn.Module):
     def __init__(self, weight_bbox=5.0, weight_giou=2.0):
         super().__init__()
