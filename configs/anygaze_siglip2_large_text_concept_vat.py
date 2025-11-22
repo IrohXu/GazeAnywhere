@@ -6,6 +6,7 @@ from os.path import join, basename
 from torch.cuda import device_count
 from modeling import backbone, meta_arch, criterion
 from detectron2.config import LazyCall as L
+# from data import *
 
 num_gpu = device_count()
 ins_per_iter = 64
@@ -52,6 +53,13 @@ dataloader.train.mask_size = dataloader.train.input_size // model.patch_size
 dataloader.train.max_scene_patches_ratio = 0.5
 dataloader.val.batch_size = 32
 dataloader.val.distributed = False
+dataloader.train.mean = dataloader.val.mean = (0.5, 0.5, 0.5)
+dataloader.train.std = dataloader.val.std = (0.5, 0.5, 0.5)
+# dataloader.train.transform = dataloader.val.transform = get_transform(
+#     input_resolution=model.image_size,
+#     mean=(0.5, 0.5, 0.5),
+#     std=(0.5, 0.5, 0.5),
+# )
 # train
 train.init_checkpoint = ""
 train.output_dir = join("./output", basename(__file__).split(".")[0])

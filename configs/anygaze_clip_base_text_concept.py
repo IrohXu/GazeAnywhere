@@ -6,19 +6,18 @@ from os.path import join, basename
 from torch.cuda import device_count
 from modeling import backbone, meta_arch, criterion
 from detectron2.config import LazyCall as L
-# from data import *
 
 num_gpu = device_count()
-ins_per_iter = 64
+ins_per_iter = 128
 len_dataset = 119614
 num_epoch = 30
 
 model = L(meta_arch.AnyGazeModelMapper)()
-model.backbone = L(backbone.build_backbone_siglip2)(
-    name="/projects/illinois/eng/cs/jrehg/checkpoints/SigLIP2/siglip2-large-patch16-512"
+model.backbone = L(backbone.build_backbone_clip)(
+    name="/projects/illinois/eng/cs/jrehg/checkpoints/CLIP/clip-vit-base-patch16"
 )
-model.tokenizer = L(backbone.build_tokenizer_siglip2)(
-    name="/projects/illinois/eng/cs/jrehg/checkpoints/SigLIP2/siglip2-large-patch16-512"
+model.tokenizer = L(backbone.build_tokenizer_clip)(
+    name="/projects/illinois/eng/cs/jrehg/checkpoints/CLIP/clip-vit-base-patch16"
 )
 model.criterion = L(criterion.AnyGazeMapperCriterion)()
 # model
@@ -32,9 +31,9 @@ model.freeze_backbone = True
 model.inout = True
 model.patch_size = 16
 model.dim = 256
-model.linear_dim = 1024
-model.linear_txt_dim = 1024
-model.max_text_seq = 64
+model.linear_dim = 768
+model.linear_txt_dim = 512
+model.max_text_seq = 77
 # dataloader
 dataloader = dataloader.anygaze_dataset_text
 dataloader.train.train_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets"
@@ -46,20 +45,13 @@ dataloader.train.num_workers = dataloader.val.num_workers = 14
 dataloader.train.distributed = num_gpu > 1
 # dataloader.train.rand_rotate = 0.5
 # dataloader.train.rand_lsj = 0.5
-model.image_size = dataloader.train.input_size = dataloader.val.input_size = 512
+model.image_size = dataloader.train.input_size = dataloader.val.input_size = 224
 dataloader.train.mask_scene = True
 dataloader.train.mask_prob = 0.5
 dataloader.train.mask_size = dataloader.train.input_size // model.patch_size
 dataloader.train.max_scene_patches_ratio = 0.5
 dataloader.val.batch_size = 32
 dataloader.val.distributed = False
-dataloader.train.mean = dataloader.val.mean = (0.5, 0.5, 0.5)
-dataloader.train.std = dataloader.val.std = (0.5, 0.5, 0.5)
-# dataloader.train.transform = dataloader.val.transform = get_transform(
-#     input_resolution=model.image_size,
-#     mean=(0.5, 0.5, 0.5),
-#     std=(0.5, 0.5, 0.5),
-# )
 # train
 train.init_checkpoint = ""
 train.output_dir = join("./output", basename(__file__).split(".")[0])

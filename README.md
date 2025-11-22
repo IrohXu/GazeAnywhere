@@ -96,3 +96,64 @@ python tools/latency_calculate.py \
   --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_clip_large_text_concept_vat_latency.py \
   --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/anygaze_clip_large_text_concept_latency \
   --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_clip_large_text_concept_256/model_final.pth
+
+
+
+```
+python tools/visualize_on_gazefollow5_new.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_256.py \
+  --input_path /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/WeillCornell_PedabyteProject_processed/for_annotations/PWC/PWC054_2019_11_13_T1_panasonic_ESCS_merged_9715_14975/clipped_frames \
+  --text "attribute: a child with gold brown hair; position: center left of the image" \
+  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC054_2019_11_13_T1_panasonic_ESCS_merged_9715_14975 \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth
+```
+
+
+```
+python tools/visualize_on_gazefollow5_new.py \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_256.py \
+  --input_path /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/WeillCornell_PedabyteProject_processed/for_annotations/PWC/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116/clipped_frames \
+  --text "attribute: child with black hair; position: center of the image" \
+  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116 \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth
+```
+
+```
+python tools/convert_visualization_to_video.py \
+  --input /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC022_2019_06_13_T1_panasonic_ESCS_merged_35448_40627 \
+  --output /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC022_2019_06_13_T1_panasonic_ESCS_merged_35448_40627.mp4 \
+  --fps 30
+```
+
+```
+python tools/cut_video.py /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC022_2019_06_13_T1_panasonic_ESCS_merged_35448_40627.mp4 -s 45 -e 55 -o sample_1.mp4
+```
+
+```
+python tools/convert_visualization_to_video.py \
+  --input /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC007_2019_02_23_T1_panasonic_ESCS_merged_43518_49870 \
+  --output /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC007_2019_02_23_T1_panasonic_ESCS_merged_43518_49870.mp4 \
+  --fps 30
+```
+
+```
+python tools/cut_video.py /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC007_2019_02_23_T1_panasonic_ESCS_merged_43518_49870.mp4 -s 74 -e 83 -o sample_3.mp4
+```
+
+
+```
+python tools/convert_visualization_to_video.py \
+  --input /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116 \
+  --output /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116.mp4 \
+  --fps 30
+```
+
+
+```
+python tools/cut_video.py /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116.mp4 -s 142 -e 148 -o sample_4.mp4
+```
+
+
+```
+python tools/merge_videos.py -o merged.mp4 sample_1.mp4 sample_2.mp4 sample_3.mp4 sample_4.mp4
+```

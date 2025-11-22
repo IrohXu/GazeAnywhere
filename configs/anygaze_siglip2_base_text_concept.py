@@ -9,16 +9,16 @@ from detectron2.config import LazyCall as L
 # from data import *
 
 num_gpu = device_count()
-ins_per_iter = 64
+ins_per_iter = 128
 len_dataset = 119614
 num_epoch = 30
 
 model = L(meta_arch.AnyGazeModelMapper)()
 model.backbone = L(backbone.build_backbone_siglip2)(
-    name="/projects/illinois/eng/cs/jrehg/checkpoints/SigLIP2/siglip2-large-patch16-512"
+    name="/projects/illinois/eng/cs/jrehg/checkpoints/SigLIP2/siglip2-base-patch16-512"
 )
 model.tokenizer = L(backbone.build_tokenizer_siglip2)(
-    name="/projects/illinois/eng/cs/jrehg/checkpoints/SigLIP2/siglip2-large-patch16-512"
+    name="/projects/illinois/eng/cs/jrehg/checkpoints/SigLIP2/siglip2-base-patch16-512"
 )
 model.criterion = L(criterion.AnyGazeMapperCriterion)()
 # model
@@ -32,15 +32,15 @@ model.freeze_backbone = True
 model.inout = True
 model.patch_size = 16
 model.dim = 256
-model.linear_dim = 1024
-model.linear_txt_dim = 1024
+model.linear_dim = 768
+model.linear_txt_dim = 768
 model.max_text_seq = 64
 # dataloader
 dataloader = dataloader.anygaze_dataset_text
 dataloader.train.train_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets"
 dataloader.val.val_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets"
 dataloader.train.train_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_train_annotations_new.txt"
-dataloader.val.val_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_gazefollow_test_annotations.txt"
+dataloader.val.val_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_videoattentiontarget_test_annotations.txt"
 dataloader.train.batch_size = ins_per_iter // num_gpu
 dataloader.train.num_workers = dataloader.val.num_workers = 14
 dataloader.train.distributed = num_gpu > 1

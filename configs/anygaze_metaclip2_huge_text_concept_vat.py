@@ -14,11 +14,11 @@ len_dataset = 119614
 num_epoch = 30
 
 model = L(meta_arch.AnyGazeModelMapper)()
-model.backbone = L(backbone.build_backbone_siglip2)(
-    name="/projects/illinois/eng/cs/jrehg/checkpoints/SigLIP2/siglip2-large-patch16-512"
+model.backbone = L(backbone.build_backbone_metaclip2)(
+    name="/projects/illinois/eng/cs/jrehg/checkpoints/MetaCLIP/metaclip-2-worldwide-huge-378"
 )
-model.tokenizer = L(backbone.build_tokenizer_siglip2)(
-    name="/projects/illinois/eng/cs/jrehg/checkpoints/SigLIP2/siglip2-large-patch16-512"
+model.tokenizer = L(backbone.build_tokenizer_metaclip2)(
+    name="/projects/illinois/eng/cs/jrehg/checkpoints/MetaCLIP/metaclip-2-worldwide-huge-378"
 )
 model.criterion = L(criterion.AnyGazeMapperCriterion)()
 # model
@@ -30,35 +30,33 @@ model.criterion.use_focal_loss = True
 model.device = "cuda"
 model.freeze_backbone = True
 model.inout = True
-model.patch_size = 16
+model.patch_size = 14
 model.dim = 256
-model.linear_dim = 1024
+model.linear_dim = 1280
 model.linear_txt_dim = 1024
-model.max_text_seq = 64
+model.max_text_seq = 77
 # dataloader
 dataloader = dataloader.anygaze_dataset_text
 dataloader.train.train_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets"
 dataloader.val.val_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets"
 dataloader.train.train_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_train_annotations_new.txt"
-dataloader.val.val_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_gazefollow_test_annotations.txt"
+dataloader.val.val_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_videoattentiontarget_test_annotations.txt"
 dataloader.train.batch_size = ins_per_iter // num_gpu
 dataloader.train.num_workers = dataloader.val.num_workers = 14
 dataloader.train.distributed = num_gpu > 1
 # dataloader.train.rand_rotate = 0.5
 # dataloader.train.rand_lsj = 0.5
-model.image_size = dataloader.train.input_size = dataloader.val.input_size = 512
+model.image_size = dataloader.train.input_size = dataloader.val.input_size = 378
 dataloader.train.mask_scene = True
 dataloader.train.mask_prob = 0.5
 dataloader.train.mask_size = dataloader.train.input_size // model.patch_size
 dataloader.train.max_scene_patches_ratio = 0.5
 dataloader.val.batch_size = 32
 dataloader.val.distributed = False
-dataloader.train.mean = dataloader.val.mean = (0.5, 0.5, 0.5)
-dataloader.train.std = dataloader.val.std = (0.5, 0.5, 0.5)
 # dataloader.train.transform = dataloader.val.transform = get_transform(
 #     input_resolution=model.image_size,
-#     mean=(0.5, 0.5, 0.5),
-#     std=(0.5, 0.5, 0.5),
+#     mean=(0.48145466,0.4578275,0.40821073),
+#     std=(0.26862954, 0.26130258, 0.27577711),
 # )
 # train
 train.init_checkpoint = ""

@@ -4,7 +4,7 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --ntasks=1 
 #SBATCH --job-name="asd_gaze"
-#SBATCH --partition=HCESC-H100-normal
+#SBATCH --partition=HCESC-H200-normal
 #SBATCH --gres=gpu:1
 #SBATCH --mem=128g
 #SBATCH --output=./evaluation_anygaze_clip.log
@@ -20,23 +20,23 @@ python=/projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/envs/smolagent/bi
 nvidia-smi
 
 
-python tools/eval_on_videoattentiontarget2.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_clip_large_text_concept_childgaze.py \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_clip_large_text_concept_256/model_final.pth \
-  --use_dark_inference
+# python tools/eval_on_videoattentiontarget2.py \
+#   --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_clip_large_text_concept_childgaze.py \
+#   --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_clip_large_text_concept_256/model_final.pth \
+#   --use_dark_inference
 
 python tools/eval_on_gazefollow2.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_clip_large_text_concept_256.py \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_clip_large_text_concept_256/model_final.pth \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_clip_base_text_concept.py \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_clip_base_text_concept/model_final.pth \
   --use_dark_inference
 
 python tools/eval_on_videoattentiontarget2.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_clip_large_text_concept_vat.py \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_clip_large_text_concept_256/model_final.pth \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_clip_base_text_concept_vat.py \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_clip_base_text_concept/model_final.pth \
   --use_dark_inference
 
-python tools/eval_on_videoattentiontarget2.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_clip_large_text_concept_childplay.py \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_clip_large_text_concept_256/model_final.pth \
-  --use_dark_inference
+# python tools/eval_on_videoattentiontarget2.py \
+#   --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_clip_large_text_concept_childplay.py \
+#   --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_clip_large_text_concept_256/model_final.pth \
+#   --use_dark_inference
 

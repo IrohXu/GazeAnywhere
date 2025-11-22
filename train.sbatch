@@ -4,10 +4,10 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --ntasks=1 
 #SBATCH --job-name="asd_gaze"
-#SBATCH --partition=HCESC-H100-normal
+#SBATCH --partition=HCESC-H200-normal
 #SBATCH --gres=gpu:4
-#SBATCH --mem=128g
-#SBATCH --output=./0029-train_anygaze-textconcept-dinov3.log
+#SBATCH --mem=256g
+#SBATCH --output=./0039-train_anygaze-textconcept-siglip2.log
 
 source /projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/etc/profile.d/conda.sh
 export PATH=/projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/bin:$PATH
@@ -34,5 +34,5 @@ PY
 # python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_text_concept_256.py --num-gpu 4 --dist-url tcp://127.0.0.1:${MASTER_PORT}
 # python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_text_concept_512.py --num-gpu 2 --dist-url tcp://127.0.0.1:${MASTER_PORT}
 # python -u tools/train.py --config-file ./configs/anygaze_siglip2_large_text_concept_1024.py --num-gpu 4 --dist-url tcp://127.0.0.1:${MASTER_PORT}
-python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_text_concept_256_no_head.py --num-gpu 4 --dist-url tcp://127.0.0.1:${MASTER_PORT}
+python -u tools/train.py --config-file ./configs/anygaze_siglip2_base_text_concept.py --num-gpu 4 --dist-url tcp://127.0.0.1:${MASTER_PORT}
 

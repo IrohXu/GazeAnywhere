@@ -46,7 +46,7 @@ def images_to_video(
 
     # Sort images by numeric key
     image_paths = sorted(image_paths, key=extract_numeric_key)
-    image_paths = image_paths[::6]  # For testing, select every 2nd image
+    image_paths = image_paths[::1]  # For testing, select every 2nd image
 
     # Read first image to get frame size
     first = cv2.imread(image_paths[0])

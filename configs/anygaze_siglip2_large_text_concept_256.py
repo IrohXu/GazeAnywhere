@@ -6,9 +6,10 @@ from os.path import join, basename
 from torch.cuda import device_count
 from modeling import backbone, meta_arch, criterion
 from detectron2.config import LazyCall as L
+# from data import *
 
 num_gpu = device_count()
-ins_per_iter = 64
+ins_per_iter = 128
 len_dataset = 119614
 num_epoch = 30
 
@@ -39,7 +40,7 @@ dataloader = dataloader.anygaze_dataset_text
 dataloader.train.train_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets"
 dataloader.val.val_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets"
 dataloader.train.train_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_train_annotations_new.txt"
-dataloader.val.val_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_gazefollow_test_annotations.txt"
+dataloader.val.val_anno = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets/anygaze_videoattentiontarget_test_annotations.txt"
 dataloader.train.batch_size = ins_per_iter // num_gpu
 dataloader.train.num_workers = dataloader.val.num_workers = 14
 dataloader.train.distributed = num_gpu > 1
@@ -52,6 +53,13 @@ dataloader.train.mask_size = dataloader.train.input_size // model.patch_size
 dataloader.train.max_scene_patches_ratio = 0.5
 dataloader.val.batch_size = 32
 dataloader.val.distributed = False
+dataloader.train.mean = dataloader.val.mean = (0.5, 0.5, 0.5)
+dataloader.train.std = dataloader.val.std = (0.5, 0.5, 0.5)
+# dataloader.train.transform = dataloader.val.transform = get_transform(
+#     input_resolution=model.image_size,
+#     mean=(0.5, 0.5, 0.5),
+#     std=(0.5, 0.5, 0.5),
+# )
 # train
 train.init_checkpoint = ""
 train.output_dir = join("./output", basename(__file__).split(".")[0])

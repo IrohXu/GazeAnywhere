@@ -7,7 +7,7 @@
 #SBATCH --partition=HCESC-H100-normal
 #SBATCH --gres=gpu:1
 #SBATCH --mem=128g
-#SBATCH --output=./evaluation_anygaze_dinov3_256_pose.log
+#SBATCH --output=./evaluation_anygaze_dinov3_l2.log
 
 source /projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/etc/profile.d/conda.sh
 export PATH=/projects/illinois/eng/cs/jrehg/users/xucao2/miniconda3/bin:$PATH
@@ -41,14 +41,14 @@ nvidia-smi
 #   --use_dark_inference
 
 python tools/eval_on_gazefollow2.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_gazefollow.py \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth \
+  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_256_l2.py \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_l2/model_0025217.pth \
   --use_dark_inference
 
-python tools/eval_on_videoattentiontarget2.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_vat.py \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth \
-  --use_dark_inference
+# python tools/eval_on_videoattentiontarget2.py \
+#   --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_vat.py \
+#   --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth \
+#   --use_dark_inference
 
 # python tools/eval_on_videoattentiontarget2.py \
 #   --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_childplay.py \
