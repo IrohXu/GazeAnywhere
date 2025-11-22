@@ -1,6 +1,6 @@
 # GazeAnywhere: Gaze Target Estimation Anywhere with Concepts
 
-### UIUC Rehg Lab | Google XR
+### [UIUC Rehg Lab](https://rehg.org/) | [Google AR](https://arvr.google.com/) | [PediaMed AI](https://pediamedai.com/)
 
 ## Installation
 * Create a conda virtual env and activate it.
