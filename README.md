@@ -9,8 +9,8 @@
 [Xu Cao](https://www.irohxucao.com/)\*†,
 [Houze Yang]()\*,
 [Vipin Gunda](https://www.vipingunda.com/)\*,
-[Zhongyi Zhou](https://research.google/people/zhongyizhou/),
-[Tianyu Xu](https://research.google/people/cady-tianyu-xu/),
+[Zhongyi Zhou](https://research.google/people/zhongyizhou/)\*,
+[Tianyu Xu](https://research.google/people/cady-tianyu-xu/)\*,
 [Adarsh Kowdle](https://research.google/people/adarshkowdle/),
 [Inki Kim](https://grainger.illinois.edu/about/directory/faculty/inkikim),
 [Jim Rehg](https://rehg.org/)†
