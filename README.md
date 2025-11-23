@@ -1,161 +1,78 @@
-# GazeAnywhere: Gaze Target Estimation Anywhere with Concepts
+# GazeAnywhere: Gaze Target Estimation Anywhere with Concepts    
+
+* The first text and visual concept-driven gaze target estimation model.     
+* Define the Promptable Gaze Target Estimation (PGE) task.     
+* The first Gaze Target Estimation Agent - AnyGaze Agent, connect GazeAnywhere to Gemini 3.      
 
 ### [UIUC Rehg Lab](https://rehg.org/) | [Google AR](https://arvr.google.com/) | [PediaMed AI](https://pediamedai.com/)
 
-## Installation
-* Create a conda virtual env and activate it.
+[Xu Cao](https://www.irohxucao.com/)\*†,
+[Houze Yang]()\*,
+[Vipin Gunda](https://www.vipingunda.com/)\*,
+[Zhongyi Zhou](https://research.google/people/zhongyizhou/),
+[Tianyu Xu](https://research.google/people/cady-tianyu-xu/),
+[Adarsh Kowdle](https://research.google/people/adarshkowdle/),
+[Inki Kim](https://grainger.illinois.edu/about/directory/faculty/inkikim),
+[Jim Rehg](https://rehg.org/)†
 
-  ```
-  conda env create -f environment.yml
+\* core contributor, † project lead
+
+![GazeAnywhere architecture](assets/model_diagram.png?raw=true) Estimating human gaze targets from images in-the-wild is an important and formidable task. Existing approaches primarily employ brittle, multi-stage pipelines that require explicit inputs, like head bounding boxes and human pose, in order to identify the subject of gaze analysis. As a result, detection errors can cascade and lead to failure. Moreover, these prior works lack the flexibility of specifying the gaze analysis task via natural language prompting, an approach which has been shown to have significant benefits in convenience and scalability for other image analysis tasks. To overcome these limitations, we introduce the **Promptable Gaze Target Estimation (PGE)** task, a new end-to-end, concept-driven paradigm for gaze analysis. PGE conditions gaze prediction on flexible user text or visual prompts (e.g., "the boy in the red shirt" or "person in point [0.52, 0.48]") to identify a specific subject for gaze analysis. This approach integrates subject localization with gaze estimation, and eliminates the rigid dependency on intermediate analysis stages. We also propose **GazeAnywhere**, the first foundation model designed for PGE. **GazeAnywhere** uses a multi-layer transformer-based detector to fuse features from frozen encoders and simultaneously solves subject localization, in/out-of-frame presence, and gaze target heatmap estimation. 
+
+## Installation
+
+### Prerequisites
+
+- Python 3.11 or higher
+- PyTorch 2.6 or higher
+- CUDA-compatible GPU with CUDA 12.6 or higher
+
+1. **Create a new Conda environment:**
+
+  ```bash
+  conda create -n anygaze python=3.12
+  conda deactivate
   conda activate anygaze
   ```
 
-* Install [detectron2](https://github.com/facebookresearch/detectron2) , follow its [documentation](https://detectron2.readthedocs.io/en/latest/), or
+2. **Install PyTorch with CUDA support:**
+
+  ```bash
+  pip install torch==2.7.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
+  ```
+
+3. **Basic installation:**
+
+  ```bash
+  pip install -r requirements.txt
+  ```
+
+4. **Install [detectron2](https://github.com/facebookresearch/detectron2), follow its [documentation](https://detectron2.readthedocs.io/en/latest/), or**
 
   ```
   pip install "git+https://github.com/facebookresearch/detectron2.git@017abbfa5f2c2a2afa045200c2af9ccf2fc6227f#egg=detectron2"
   ```
 
-## Train/Eval
-### Pre-training/Fine-tuning/Testing Dataset Preprocessing
+## Getting Started
 
-Use our internal dataset.    
+⚠️ Before using GazeAnywhere, please request access to the checkpoints on the GazeAnywhere Hugging Face [repo](https://huggingface.co/IrohXu/GazeAnywhere). Once accepted, you
+need to be authenticated to download the checkpoints. You can do this by running
+the following [steps](https://huggingface.co/docs/huggingface_hub/en/quick-start#authentication)
+(e.g. `hf auth login` after generating an access token.)
 
-### Pretrained Model
+### Basic Usage
 
-DINOv3-txt:
-
-```
-/projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/pretrained/dinov3_vitl16_dinotxt.pth
-```
-
-### Training    
-
-```
-python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_text_concept_64.py --num-gpu 2
+```python
+TODO
 ```
 
-```
-python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_text_concept_128.py --num-gpu 2
-```
+## Examples
 
-```
-python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_text_concept_256.py --num-gpu 2
-```
+TODO
 
-```
-python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_text_concept_512.py --num-gpu 2
-```
+## Acknowledgement
 
-```
-python -u tools/train.py --config-file ./configs/anygaze_dinov3txt_large_text_concept_1024.py --num-gpu 2
-```
+Our implementation is inspired by [DINOv3](https://github.com/facebookresearch/dinov3), [DINOv2 Meets Text](https://github.com/facebookresearch/dinov2), [SAM 3](https://github.com/facebookresearch/sam3), [ViTGaze](https://github.com/hustvl/ViTGaze), [sharingan](https://github.com/idiap/sharingan), [Gaze-LLE](https://github.com/fkryan/gazelle), and [TransGesture](https://github.com/IrohXu/TransGesture). Thanks for their remarkable contribution and released code! If we missed any open-source projects or related articles, we would like to complement the acknowledgement of this specific work immediately.     
 
-```
-python -u tools/train.py --config-file ./configs/anygaze_siglip2_large_text_concept.py --num-gpu 1
-```
+We would like to thank the following people for their contributions prior to GazeAnywhere: Fiona Ryan, Yuehao Song, Samy Tafasca, Authors of DINOv3 and SAM 3 in Meta, Authors of OWLv2 in Google DeepMind. Part of our idea is inspired by their papers.     
 
-
-
-## Evaluation
-
-
-```
-python tools/eval_on_gazefollow2.py \
-  --config_file ./configs/anygaze_dinov3txt_large_text_concept.py \
-  --model_weights ./output/anygaze_dinov3txt_large_text_concept/model_final.pth \
-  --use_dark_inference
-```
-
-```
-python tools/eval_on_videoattentiontarget2.py \
-  --config_file ./configs/anygaze_dinov3txt_large_text_concept_vat.py \
-  --model_weights ./output/anygaze_dinov3txt_large_text_concept/model_final.pth \
-  --use_dark_inference
-```
-
-```
-python tools/eval_on_videoattentiontarget2.py \
-  --config_file ./configs/anygaze_dinov3txt_large_text_concept_childplay.py \
-  --model_weights ./output/anygaze_dinov3txt_large_text_concept/model_final.pth \
-  --use_dark_inference
-```
-
-```
-python tools/visualize_on_gazefollow5.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_deployment.py \
-  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/anygaze_dinov3txt_large_text_concept_deployment \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth
-```
-
-python tools/latency_calculate.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_vat_latency.py \
-  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/anygaze_dinov3txt_large_text_concept_latency \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth
-
-
-python tools/latency_calculate.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_clip_large_text_concept_vat_latency.py \
-  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/anygaze_clip_large_text_concept_latency \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_clip_large_text_concept_256/model_final.pth
-
-
-
-```
-python tools/visualize_on_gazefollow5_new.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_256.py \
-  --input_path /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/WeillCornell_PedabyteProject_processed/for_annotations/PWC/PWC054_2019_11_13_T1_panasonic_ESCS_merged_9715_14975/clipped_frames \
-  --text "attribute: a child with gold brown hair; position: center left of the image" \
-  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC054_2019_11_13_T1_panasonic_ESCS_merged_9715_14975 \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth
-```
-
-
-```
-python tools/visualize_on_gazefollow5_new.py \
-  --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/anygaze_dinov3txt_large_text_concept_256.py \
-  --input_path /projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/WeillCornell_PedabyteProject_processed/for_annotations/PWC/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116/clipped_frames \
-  --text "attribute: child with black hair; position: center of the image" \
-  --output_path /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116 \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth
-```
-
-```
-python tools/convert_visualization_to_video.py \
-  --input /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC022_2019_06_13_T1_panasonic_ESCS_merged_35448_40627 \
-  --output /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC022_2019_06_13_T1_panasonic_ESCS_merged_35448_40627.mp4 \
-  --fps 30
-```
-
-```
-python tools/cut_video.py /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC022_2019_06_13_T1_panasonic_ESCS_merged_35448_40627.mp4 -s 45 -e 55 -o sample_1.mp4
-```
-
-```
-python tools/convert_visualization_to_video.py \
-  --input /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC007_2019_02_23_T1_panasonic_ESCS_merged_43518_49870 \
-  --output /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC007_2019_02_23_T1_panasonic_ESCS_merged_43518_49870.mp4 \
-  --fps 30
-```
-
-```
-python tools/cut_video.py /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC007_2019_02_23_T1_panasonic_ESCS_merged_43518_49870.mp4 -s 74 -e 83 -o sample_3.mp4
-```
-
-
-```
-python tools/convert_visualization_to_video.py \
-  --input /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116 \
-  --output /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116.mp4 \
-  --fps 30
-```
-
-
-```
-python tools/cut_video.py /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/visualization/PWC041_2019_09_06_T1_panasonic_ESCS_merged_66052_72116.mp4 -s 142 -e 148 -o sample_4.mp4
-```
-
-
-```
-python tools/merge_videos.py -o merged.mp4 sample_1.mp4 sample_2.mp4 sample_3.mp4 sample_4.mp4
-```

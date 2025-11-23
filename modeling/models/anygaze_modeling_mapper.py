@@ -1,8 +1,7 @@
 import torch
 from torch import nn
 from typing import Dict, Union
-from ..backbone.vit import Block
-from ..fusion.cross_attention import CrossAttentionBlock
+from ..backbone.dinov2 import Block
 import torchvision
 
 import math

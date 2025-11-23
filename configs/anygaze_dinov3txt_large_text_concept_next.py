@@ -4,7 +4,7 @@ from .common.scheduler import lr_multiplier
 from .common.train import train
 from os.path import join, basename
 from torch.cuda import device_count
-from modeling import backbone, meta_arch, criterion
+from modeling import backbone, models, criterion
 from detectron2.config import LazyCall as L
 
 num_gpu = device_count()
@@ -12,7 +12,7 @@ ins_per_iter = 128
 len_dataset = 119614
 num_epoch = 5
 
-model = L(meta_arch.AnyGazeModelMapper)()
+model = L(models.AnyGazeModelMapper)()
 model.backbone = L(backbone.build_backbone_dinov3txt)(
     name="dinov3_large"
 )
