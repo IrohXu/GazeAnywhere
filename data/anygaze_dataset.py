@@ -13,53 +13,86 @@ from .masking import MaskGenerator
 from . import data_utils as utils
 
 
-def random_prompt(
-    attribute: str,
-    position: str,
-    action: str,
-    pose: str,
-    size_weights: dict[int, float] | None = None,
-    rng: random.Random | None = None,
+def prompt_generator(
+    prompts: dict[str, str],
+    text_prompt: float,
+    visual_prompt: float,
+    apprearance: float,
+    position: float,
+    action: float,
+    pose: float,
+    box: float,
+    point: float,
 ) -> str:
     """
-    Build a randomized 'key: value' string using a random subset (size 1..4) and random order.
-    - Automatically includes 1-item and 2-item cases.
-    - Skips empty/None values.
-    - `size_weights` lets you bias how often 1/2/3/4-item prompts appear.
-      e.g., {1:1, 2:2, 3:3, 4:4} biases toward longer prompts.
-    - Pass a custom `rng` for reproducibility (e.g., rng=random.Random(42)).
+    Build a mixed prompt string that may contain text, visual cues, or both.
+    - Skips empty/None/"none" entries.
+    - Randomly removes at least one available item so we never expose all info.
     """
-    if rng is None:
-        rng = random
 
-    fields = {
-        "attribute": attribute,
-        "position": position,
-        "action": action,
-        "pose": pose,
-    }
+    def _is_valid(value: Optional[str]) -> bool:
+        if value is None:
+            return False
+        if isinstance(value, str):
+            stripped = value.strip()
+            if not stripped or stripped.lower() == "none":
+                return False
+        return True
 
-    # keep only non-empty values
-    available_keys = [k for k, v in fields.items() if v not in (None, "", [])]
-    if not available_keys:
-        return ""
+    def _sample_partial(items: list[str]) -> list[str]:
+        if len(items) <= 1:
+            return items[:]
+        keep = random.randint(1, len(items) - 1)
+        return random.sample(items, keep)
 
-    # choose subset size (1..len(available))
-    if size_weights is None:
-        # neutral: all sizes equally likely
-        size_weights = {1: 1, 2: 1, 3: 1, 4: 1}
+    selected_prompts: list[str] = []
 
-    valid_sizes = [s for s in size_weights if 1 <= s <= len(available_keys)]
-    weights = [size_weights[s] for s in valid_sizes]
-    n = rng.choices(valid_sizes, weights=weights, k=1)[0]
+    text_candidates: list[str] = []
+    if random.random() < apprearance and _is_valid(prompts.get("apprearance")):
+        text_candidates.append(f"apprearance: {prompts['apprearance']}")
+    if random.random() < position and _is_valid(prompts.get("position")):
+        text_candidates.append(f"position: {prompts['position']}")
+    if random.random() < action and _is_valid(prompts.get("action")):
+        text_candidates.append(f"action: {prompts['action']}")
+    if random.random() < pose and _is_valid(prompts.get("pose")):
+        text_candidates.append(f"pose: {prompts['pose']}")
 
-    # pick random subset and shuffle order
-    chosen = rng.sample(available_keys, n)
-    rng.shuffle(chosen)
+    visual_candidates: list[str] = []
+    if random.random() < box and _is_valid(prompts.get("box")):
+        visual_candidates.append(f"visual box: {prompts['box']}")
+    if random.random() < point and _is_valid(prompts.get("point")):
+        visual_candidates.append(f"visual point: {prompts['point']}")
 
-    # format
-    parts = [f"{k}: {fields[k]}" for k in chosen]
-    return "; ".join(parts)
+    if text_candidates and random.random() < text_prompt:
+        selected_prompts.extend(_sample_partial(text_candidates))
+
+    if visual_candidates and random.random() < visual_prompt:
+        selected_prompts.extend(_sample_partial(visual_candidates))
+
+    if not selected_prompts:
+        fallback_pool = []
+        if text_candidates:
+            fallback_pool.append(random.choice(text_candidates))
+        if visual_candidates:
+            fallback_pool.append(random.choice(visual_candidates))
+        if fallback_pool:
+            selected_prompts.append(random.choice(fallback_pool))
+
+    random.shuffle(selected_prompts)
+    return "; ".join(selected_prompts)
+
+
+def _sample_point_in_box(
+    x_min: float, y_min: float, x_max: float, y_max: float
+) -> tuple[float, float]:
+    """
+    Draw a normalized point inside the bbox, biased toward the center.
+    """
+    width = max(x_max - x_min, 1e-6)
+    height = max(y_max - y_min, 1e-6)
+    u = random.betavariate(2, 2)  # center-heavy distribution
+    v = random.betavariate(2, 2)
+    return x_min + u * width, y_min + v * height
 
 
 class AnyGazeDataset(Dataset):
@@ -96,7 +129,7 @@ class AnyGazeDataset(Dataset):
                 "source",
                 "meta0",
                 "meta1",
-                "attribute",
+                "apprearance",
                 "position",
                 "action",
                 "pose",
@@ -123,7 +156,7 @@ class AnyGazeDataset(Dataset):
                     "gaze_x",
                     "gaze_y",
                     "inout",
-                    "attribute",
+                    "apprearance",
                     "position",
                     "action",
                     "pose",
@@ -145,7 +178,7 @@ class AnyGazeDataset(Dataset):
                 "source",
                 "meta0",
                 "meta1",
-                "attribute",
+                "apprearance",
                 "position",
                 "action",
                 "pose",
@@ -167,7 +200,7 @@ class AnyGazeDataset(Dataset):
                     "head_x_max",
                     "head_y_max",
                     "inout",
-                    "attribute",
+                    "apprearance",
                     "position",
                     "action",
                     "pose",
@@ -217,7 +250,7 @@ class AnyGazeDataset(Dataset):
                 gaze_x = row["gaze_x"]
                 gaze_y = row["gaze_y"]
                 inout = row["inout"]
-                attribute = row["attribute"]
+                apprearance = row["apprearance"]
                 position = row["position"]
                 action = row["action"]
                 pose = row["pose"]
@@ -241,7 +274,7 @@ class AnyGazeDataset(Dataset):
                 gaze_x,
                 gaze_y,
                 inout,
-                attribute,
+                apprearance,
                 position,
                 action,
                 pose
@@ -276,26 +309,60 @@ class AnyGazeDataset(Dataset):
             # center_rate = random.choice([2,3,4])
             # x_center_norm = round((x_min + x_max) / (2 * width), center_rate)
             # y_center_norm = round((y_min + y_max) / (2 * height), center_rate)
-            if self.visual_text_ratio < random.random():
-                text = random_prompt(
-                    attribute,
-                    position,
-                    action,
-                    pose,
-                    size_weights = {1: 0, 2: 1, 3: 1, 4: 1}
-                )
-            else:
-                center_rate = random.choice([2,3,4,5])
-                x_center_norm = round((x_min + x_max) / (2 * width), center_rate)
-                y_center_norm = round((y_min + y_max) / (2 * height), center_rate)
-                text = "visual position: " + str(x_center_norm) + " " + str(y_center_norm)
-        else:           
-            text = random_prompt(
-                attribute,
-                position,
-                action,
-                pose,
-                size_weights = {1: 0, 2: 0, 3: 0, 4: 1}
+            x_min_norm = x_min / width
+            y_min_norm = y_min / height
+            x_max_norm = x_max / width
+            y_max_norm = y_max / height
+            box_prompt = f"{x_min_norm:.4f},{y_min_norm:.4f},{x_max_norm:.4f},{y_max_norm:.4f}"
+            point_x, point_y = _sample_point_in_box(
+                x_min_norm, y_min_norm, x_max_norm, y_max_norm
+            )
+            point_prompt = f"{point_x:.4f},{point_y:.4f}"
+            text = prompt_generator(
+                {
+                    "apprearance": apprearance,
+                    "position": position,
+                    "action": action,
+                    "pose": pose,
+                    "box": box_prompt,
+                    "point": point_prompt,
+                },
+                text_prompt=0.8,
+                visual_prompt=0.2,
+                apprearance=1.0,
+                position=0.5,
+                action=0.5,
+                pose=0.5,
+                box=0.5,
+                point=0.5,
+            )
+        else:
+            x_min_norm = x_min / width
+            y_min_norm = y_min / height
+            x_max_norm = x_max / width
+            y_max_norm = y_max / height
+            box_prompt = f"{x_min_norm:.4f},{y_min_norm:.4f},{x_max_norm:.4f},{y_max_norm:.4f}"
+            point_x, point_y = _sample_point_in_box(
+                x_min_norm, y_min_norm, x_max_norm, y_max_norm
+            )
+            point_prompt = f"{point_x:.4f},{point_y:.4f}"
+            text = prompt_generator(
+                {
+                    "apprearance": apprearance,
+                    "position": position,
+                    "action": action,
+                    "pose": pose,
+                    "box": box_prompt,
+                    "point": point_prompt,
+                },
+                text_prompt=1.0,
+                visual_prompt=0.0,
+                apprearance=1.0,
+                position=0.0,
+                action=0.0,
+                pose=0.0,
+                box=0.0,
+                point=0.0,
             )
 
         head_channel = utils.get_head_box_channel(
@@ -351,7 +418,6 @@ class AnyGazeDataset(Dataset):
         if self.is_train:
             out_dict = {
                 "images": img,
-                "head_channels": head_channel,
                 "heatmaps": gaze_heatmap,
                 "gazes": torch.FloatTensor([gaze_x, gaze_y]),
                 "bbox": torch.FloatTensor([(x_max + x_min) / (2 * width), (y_max + y_min) / (2 * height), (x_max-x_min) / width, (y_max-y_min) / height]),
@@ -366,7 +432,6 @@ class AnyGazeDataset(Dataset):
         else:
             return {
                 "images": img,
-                "head_channels": head_channel,
                 "heatmaps": gaze_heatmap,
                 "gazes": cont_gaze,
                 "bbox": torch.FloatTensor([(x_max + x_min) / (2 * width), (y_max + y_min) / (2 * height), (x_max-x_min) / width, (y_max-y_min) / height]),

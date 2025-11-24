@@ -150,7 +150,6 @@ class AnyGazeModelMapper(nn.Module):
             scenes,
             texts,
             gt_heads,
-            head_channels,
             gt_heatmaps,
             gt_inouts,
             image_masks,
@@ -322,7 +321,6 @@ class AnyGazeModelMapper(nn.Module):
             batched_inputs["images"].to(self.device),
             texts.to(self.device),
             batched_inputs["bbox"].to(self.device),
-            batched_inputs["head_channels"].to(self.device),
             batched_inputs["heatmaps"].to(self.device)
             if "heatmaps" in batched_inputs.keys()
             else None,
