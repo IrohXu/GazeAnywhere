@@ -8,9 +8,9 @@ from modeling import backbone, models, criterion
 from detectron2.config import LazyCall as L
 
 num_gpu = device_count()
-ins_per_iter = 128
+ins_per_iter = 256
 len_dataset = 119614
-num_epoch = 5
+num_epoch = 80
 
 model = L(models.AnyGazeModelMapper)()
 model.backbone = L(backbone.build_backbone_dinov3txt)(
@@ -28,7 +28,7 @@ model.freeze_backbone = True
 model.inout = True
 model.patch_size = 16
 model.dim = 512
-model.num_layers = 5
+model.num_layers = 6
 # dataloader
 dataloader = dataloader.anygaze_dataset
 dataloader.train.train_root = "/projects/illinois/eng/cs/jrehg/datasets-irb/devsci_autism/gaze_datasets"
@@ -48,7 +48,7 @@ dataloader.train.max_scene_patches_ratio = 0.5
 dataloader.val.batch_size = 32
 dataloader.val.distributed = False
 # train
-train.init_checkpoint = "/projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth"
+train.init_checkpoint = "pretrained/dinov3_vitl16_dinotxt.pth"
 train.output_dir = join("./output", basename(__file__).split(".")[0])
 train.max_iter = len_dataset * num_epoch // ins_per_iter
 train.log_period = len_dataset // (ins_per_iter * 10)
@@ -56,7 +56,7 @@ train.checkpointer.max_to_keep = 10
 train.checkpointer.period = len_dataset // ins_per_iter
 train.seed = 0
 # optimizer
-optimizer.lr = 1e-5
+optimizer.lr = 5e-4
 optimizer.betas = (0.9, 0.99)
 lr_multiplier.scheduler.typ = "cosine"
 lr_multiplier.scheduler.start_value = 1

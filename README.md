@@ -2,7 +2,7 @@
 
 * The first text and visual concept-driven gaze target estimation model.
 * Defines the Promptable Gaze Target Estimation (PGE) task.
-* The first Gaze Target Estimation Agent - AnyGaze Agent, which connects GazeAnywhere to Gemini 3.      
+* The first Gaze Target Estimation Agent - AnyGaze Agent, which connects GazeAnywhere to Gemini 2.5 and Gemini 3.      
 
 ### [UIUC Rehg Lab](https://rehg.org/) | [Google AR](https://arvr.google.com/) | [PediaMed AI](https://pediamedai.com/)
 
@@ -50,13 +50,13 @@ We also propose **GazeAnywhere**, the first foundation model designed for PGE. *
 2. **Install PyTorch with CUDA support:**
 
   ```bash
-  pip install torch==2.7.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
+  pip3 install torch==2.7.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
   ```
 
 3. **Install dependencies:**
 
   ```bash
-  pip install -r requirements.txt
+  pip3 install -r requirements.txt
   ```
 
 4. **Install detectron2:**
@@ -64,7 +64,7 @@ We also propose **GazeAnywhere**, the first foundation model designed for PGE. *
    Follow the [detectron2 documentation](https://detectron2.readthedocs.io/en/latest/) for installation, or use:
 
   ```bash
-  pip install "git+https://github.com/facebookresearch/detectron2.git@017abbfa5f2c2a2afa045200c2af9ccf2fc6227f#egg=detectron2"
+  pip3 install "git+https://github.com/facebookresearch/detectron2.git@017abbfa5f2c2a2afa045200c2af9ccf2fc6227f#egg=detectron2" --no-build-isolation
   ```
 
 ## Getting Started
