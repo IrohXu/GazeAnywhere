@@ -87,8 +87,25 @@ Our implementation is inspired by [DINOv3](https://github.com/facebookresearch/d
 
 We would like to thank the following people for their contributions prior to GazeAnywhere: Fiona Ryan, Yuehao Song, Samy Tafasca, the authors of DINOv3 and SAM 3 at Meta, and the authors of OWLv2 at Google DeepMind. Part of our idea is inspired by their papers.     
 
+
 ## Collaboration   
 
 We are welcoming technical contributors joining us in this project. Independent researchers making significant contributions (exploring new applications, training/inference acceleration, validating new components, providing more training data) in GazeAnywhere will be added into the author list of GazeAnywhere 2. We will regularly review the Pull requests and contact contributors.      
 
 🔥PediaMed AI is hiring founder student technical staff, contact Xu Cao (xucao@pediamed.ai) if you're interested. The basic requirement is having one first-author top AI or HCI conference paper (not benchmark paper) including AAAI, ACL, CHI, CVPR, ECCV, EMNLP, ICCV, ICLR, ICML, IJCAI, NAACL, NeurIPS, UbiComp / Pervasive / IMWUT, UIST.    
+
+
+## Citing GazeAnywhere    
+
+If you use GazeAnywhere or the Gaze-Co dataset in your research, please use the following BibTeX entry.
+
+```
+@misc{cao2025gazeanywhere,
+      title={Gaze Target Estimation Anywhere with Concepts},
+      author={Xu Cao and Houze Yang and Vipin Gunda and Zhongyi Zhou and Tianyu Xu and Adarsh Kowdle and Inki Kim and Jim Rehg},
+      year={2025},
+      howpublished={\url{https://github.com/rehglab/GazeAnywhere}},
+      note={Version 1.0},
+}
+```
+

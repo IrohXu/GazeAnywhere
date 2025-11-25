@@ -52,7 +52,7 @@ train.init_checkpoint = "pretrained/dinov3_vitl16_dinotxt.pth"
 train.output_dir = join("./output", basename(__file__).split(".")[0])
 train.max_iter = len_dataset * num_epoch // ins_per_iter
 train.log_period = len_dataset // (ins_per_iter * 10)
-train.checkpointer.max_to_keep = 10
+train.checkpointer.max_to_keep = 3
 train.checkpointer.period = len_dataset // ins_per_iter
 train.seed = 0
 # optimizer
