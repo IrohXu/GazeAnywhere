@@ -1,5 +1,5 @@
 <div align="center">
-<h1>GazeAnywhere: Gaze Target Estimation Anywhere with Concepts</h1>
+<h1>Gaze Target Estimation Anywhere with Concepts</h1>
 
 **[UIUC Rehg Lab](https://rehg.org/)**; **[Google AR](https://arvr.google.com/)**; **[PediaMed AI](https://pediamedai.com/)**
 
