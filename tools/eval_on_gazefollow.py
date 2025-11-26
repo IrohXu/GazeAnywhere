@@ -99,6 +99,7 @@ def main(args):
     model: torch.Module = instantiate(cfg.model)
     model.load_state_dict(torch.load(args.model_weights, weights_only=False)["model"])
     model.to(cfg.train.device)
+    breakpoint()
     do_test(cfg, model, use_dark_inference=args.use_dark_inference)
 
 

@@ -76,9 +76,19 @@ We also propose **GazeAnywhere**, the first foundation model designed for PGE. *
 
 ### Basic Usage
 
-```python
-TODO
 ```
+python tools/inference.py \
+  --config_file configs/gazeanywhere_config.py \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/checkpoints/GazeAnywhere/gazeanywhere.pth \
+  --image_path assets/example.jpg \
+  --text "apperance: light brown hair girl with blue and white striped shirt" \
+  --save_path visualization.jpg \
+  --use_dark_inference
+```
+
+<!-- ```python
+TODO
+``` -->
 
 ## Examples
 

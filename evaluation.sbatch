@@ -21,6 +21,5 @@ nvidia-smi
 
 python tools/eval_on_gazefollow.py \
   --config_file /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/configs/gazeanywhere_dinov3txt_large_text_concept.py \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/gazeanywhere_dinov3txt_large_text_concept/model_final.pth \
+  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/gazeanywhere_dinov3txt_large_text_concept_next/model_final.pth \
   --use_dark_inference
-

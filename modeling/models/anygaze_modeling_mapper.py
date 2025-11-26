@@ -73,6 +73,7 @@ class AnyGazeModelMapper(nn.Module):
         image_size: int = 512,
         patch_size: int = 16,
         max_text_seq: int = 77, # --- ADDED --- Max text tokens (e.g., 77 for CLIP)
+        num_head_queries: int = 1,
         out_size: int = 64
     ) -> None:
         super().__init__()

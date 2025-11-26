@@ -203,3 +203,5 @@ pre_annotation/
 visualization/
 vlm_benchmark/
 *.mp4
+*.sbatch
+*.jpg
