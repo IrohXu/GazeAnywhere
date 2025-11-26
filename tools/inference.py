@@ -153,12 +153,12 @@ def main(args):
         gaze_x = pred_x / model.out_size[0] * img_size[0]
         gaze_y = pred_y / model.out_size[1] * img_size[1]
         
-        visualization_pred = overlay_heatmap_on_image(image, scaled_heatmap, head_bbox, gaze_xy=(pred_x, pred_y), inout=inout)
+        visualization_pred = overlay_heatmap_on_image(image, scaled_heatmap, head_bbox, gaze_xy=(gaze_x, gaze_y), inout=inout)
         # overlay_bgr, colored_heat_bgr = overlay_heatmap_on_image(image, scaled_heatmap, head_bbox, alpha=0.1)
         cv2.imwrite(save_path, visualization_pred)
         
         output = {
-            "gaze": (pred_x, pred_y),
+            "gaze": (gaze_x, gaze_y),
             "inout": inout
         }
         
