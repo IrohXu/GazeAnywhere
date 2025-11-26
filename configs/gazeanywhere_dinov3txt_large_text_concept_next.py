@@ -8,9 +8,9 @@ from modeling import backbone, models, criterion
 from detectron2.config import LazyCall as L
 
 num_gpu = device_count()
-ins_per_iter = 256
+ins_per_iter = 1024
 len_dataset = 119614
-num_epoch = 5
+num_epoch = 10
 
 model = L(models.AnyGazeModelMapper)()
 model.backbone = L(backbone.build_backbone_dinov3txt)(
@@ -48,7 +48,7 @@ dataloader.train.max_scene_patches_ratio = 0.5
 dataloader.val.batch_size = 32
 dataloader.val.distributed = False
 # train
-train.init_checkpoint = "/projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/anygaze_dinov3txt_large_text_concept_256_new/model_final.pth"
+train.init_checkpoint = "/projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/output/gazeanywhere_dinov3txt_large_text_concept/model_final.pth"
 train.output_dir = join("./output", basename(__file__).split(".")[0])
 train.max_iter = len_dataset * num_epoch // ins_per_iter
 train.log_period = len_dataset // (ins_per_iter * 10)

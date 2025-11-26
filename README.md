@@ -1,10 +1,13 @@
-# GazeAnywhere: Gaze Target Estimation Anywhere with Concepts
+<div align="center">
+<h1>GazeAnywhere: Gaze Target Estimation Anywhere with Concepts</h1>
+
+**[UIUC Rehg Lab](https://rehg.org/)**; **[Google AR](https://arvr.google.com/)**; **[PediaMed AI](https://pediamedai.com/)**
+
+</div>
 
 * The first text and visual concept-driven gaze target estimation model.
 * Defines the Promptable Gaze Target Estimation (PGE) task.
 * The first Gaze Target Estimation Agent - AnyGaze Agent, which connects GazeAnywhere to Gemini 2.5 and Gemini 3.      
-
-### [UIUC Rehg Lab](https://rehg.org/) | [Google AR](https://arvr.google.com/) | [PediaMed AI](https://pediamedai.com/)
 
 [Xu Cao](https://www.irohxucao.com/)\*†,
 [Houze Yang]()\*,
@@ -92,7 +95,7 @@ We would like to thank the following people for their contributions prior to Gaz
 
 We are welcoming technical contributors joining us in this project. Independent researchers making significant contributions (exploring new applications, training/inference acceleration, validating new components, providing more training data) in GazeAnywhere will be added into the author list of GazeAnywhere 2. We will regularly review the Pull requests and contact contributors.      
 
-🔥PediaMed AI is hiring founder student technical staff, contact Xu Cao (xucao@pediamed.ai) if you're interested. The basic requirement is having one first-author top AI or HCI conference paper (not benchmark paper) including AAAI, ACL, CHI, CVPR, ECCV, EMNLP, ICCV, ICLR, ICML, IJCAI, NAACL, NeurIPS, UbiComp / Pervasive / IMWUT, UIST.    
+🔥PediaMed AI is hiring founder student technical staff, contact Xu Cao (xucao@pediamed.ai) if you're interested. The basic requirement is having one first-author top AI or HCI conference paper (not benchmark paper) including AAAI, ACL, CHI, CVPR, ECCV, EMNLP, ICCV, ICLR, ICML, IJCAI, NAACL, NeurIPS, UbiComp / Pervasive / IMWUT, UIST. Please send us your CV, the representative first author paper.      
 
 
 ## Citing GazeAnywhere    

@@ -23,6 +23,7 @@ def prompt_generator(
     pose: float,
     box: float,
     point: float,
+    is_train: bool = True,
 ) -> str:
     """
     Build a mixed prompt string that may contain text, visual cues, or both.
@@ -64,10 +65,16 @@ def prompt_generator(
         visual_candidates.append(f"visual point: {prompts['point']}")
 
     if text_candidates and random.random() < text_prompt:
-        selected_prompts.extend(_sample_partial(text_candidates))
+        if is_train:
+            selected_prompts.extend(_sample_partial(text_candidates))
+        else:
+            selected_prompts.extend(text_candidates)
 
     if visual_candidates and random.random() < visual_prompt:
-        selected_prompts.extend(_sample_partial(visual_candidates))
+        if is_train:
+            selected_prompts.extend(_sample_partial(visual_candidates))
+        else:
+            selected_prompts.extend(visual_candidates)
 
     if not selected_prompts:
         fallback_pool = []
@@ -77,8 +84,8 @@ def prompt_generator(
             fallback_pool.append(random.choice(visual_candidates))
         if fallback_pool:
             selected_prompts.append(random.choice(fallback_pool))
-
-    random.shuffle(selected_prompts)
+    if is_train:
+        random.shuffle(selected_prompts)
     return "; ".join(selected_prompts)
 
 
@@ -335,6 +342,7 @@ class AnyGazeDataset(Dataset):
                 pose=0.5,
                 box=0.5,
                 point=0.5,
+                is_train=self.is_train
             )
         else:
             x_min_norm = x_min / width
@@ -358,12 +366,14 @@ class AnyGazeDataset(Dataset):
                 text_prompt=1.0,
                 visual_prompt=0.0,
                 apprearance=1.0,
-                position=0.0,
-                action=0.0,
-                pose=0.0,
-                box=0.0,
-                point=0.0,
+                position=1.0,
+                action=1.0,
+                pose=1.0,
+                box=1.0,
+                point=1.0,
+                is_train=self.is_train
             )
+            print(text)
 
         head_channel = utils.get_head_box_channel(
             x_min,

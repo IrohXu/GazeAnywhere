@@ -24,7 +24,7 @@ def do_test(cfg, model, use_dark_inference=False):
     inout_pred = []
     with torch.no_grad():
         for data in val_loader:
-            val_gaze_heatmap_pred, val_gaze_inout_pred = model(data)
+            val_gaze_heatmap_pred, val_gaze_inout_pred, _ = model(data)
             
             val_gaze_heatmap_pred = (
                 val_gaze_heatmap_pred.squeeze(1).cpu().detach().numpy()

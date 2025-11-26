@@ -73,10 +73,7 @@ class AnyGazeModelMapper(nn.Module):
         image_size: int = 512,
         patch_size: int = 16,
         max_text_seq: int = 77, # --- ADDED --- Max text tokens (e.g., 77 for CLIP)
-        # --- New DETR parameters ---
-        num_head_queries: int = 1, # Max number of heads to detect
-        num_detr_layers: int = 6, # Number of decoder layers
-        detr_nhead: int = 8,  # Num heads in decoder MHA
+        out_size: int = 64
     ) -> None:
         super().__init__()
         self.backbone = backbone
@@ -94,7 +91,7 @@ class AnyGazeModelMapper(nn.Module):
         self.max_text_seq = max_text_seq
         
         self.inout = inout
-        self.out_size = (64, 64)
+        self.out_size = (out_size, out_size)
 
         if freeze_backbone:
             for param in self.backbone.parameters():
