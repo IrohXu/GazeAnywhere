@@ -1,7 +1,7 @@
 <div align="center">
-<h1>Gaze Target Estimation Anywhere with Concepts</h1>
+<h1>Gaze Target Estimation Anywhere with Concepts [CVPR 2026]</h1>
 
-**[UIUC Rehg Lab](https://rehg.org/)**; **[Google AR](https://arvr.google.com/)**; **[PediaMed AI](https://pediamedai.com/)**
+**[UIUC Rehg Lab](https://rehg.org/)**; **[Google AR](https://arvr.google.com/)**
 
 </div>
 
@@ -11,9 +11,9 @@
 
 [Xu Cao](https://www.irohxucao.com/)\*†,
 [Houze Yang]()\*,
-[Vipin Gunda](https://www.vipingunda.com/)\*,
-[Zhongyi Zhou](https://research.google/people/zhongyizhou/)\*,
-[Tianyu Xu](https://research.google/people/cady-tianyu-xu/)\*,
+[Vipin Gunda](https://www.vipingunda.com/),
+[Zhongyi Zhou](https://research.google/people/zhongyizhou/),
+[Tianyu Xu](https://research.google/people/cady-tianyu-xu/),
 [Adarsh Kowdle](https://research.google/people/adarshkowdle/),
 [Inki Kim](https://grainger.illinois.edu/about/directory/faculty/inkikim),
 [Jim Rehg](https://rehg.org/)†
@@ -79,7 +79,7 @@ We also propose **GazeAnywhere**, the first foundation model designed for PGE. *
 ```
 python tools/inference.py \
   --config_file configs/gazeanywhere_config.py \
-  --model_weights /projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/checkpoints/GazeAnywhere/gazeanywhere.pth \
+  --model_weights TODO \
   --image_path assets/example.jpg \
   --text "apperance: light brown hair girl with blue and white striped shirt" \
   --save_path visualization.jpg \
@@ -105,20 +105,17 @@ We would like to thank the following people for their contributions prior to Gaz
 
 We are welcoming technical contributors joining us in this project. Independent researchers making significant contributions (exploring new applications, training/inference acceleration, validating new components, providing more training data) in GazeAnywhere will be added into the author list of GazeAnywhere 2. We will regularly review the Pull requests and contact contributors.      
 
-🔥PediaMed AI is hiring founder student technical staff, contact Xu Cao (xucao@pediamed.ai) if you're interested. The basic requirement is having one first-author top AI or HCI conference paper (not benchmark paper) including AAAI, ACL, CHI, CVPR, ECCV, EMNLP, ICCV, ICLR, ICML, IJCAI, NAACL, NeurIPS, UbiComp / Pervasive / IMWUT, UIST. Please send us your CV, the representative first author paper.      
-
 
 ## Citing GazeAnywhere    
 
 If you use GazeAnywhere or the Gaze-Co dataset in your research, please use the following BibTeX entry.
 
 ```
-@misc{cao2025gazeanywhere,
-      title={Gaze Target Estimation Anywhere with Concepts},
-      author={Xu Cao and Houze Yang and Vipin Gunda and Zhongyi Zhou and Tianyu Xu and Adarsh Kowdle and Inki Kim and Jim Rehg},
-      year={2025},
-      howpublished={\url{https://github.com/rehglab/GazeAnywhere}},
-      note={Version 1.0},
+@inproceedings{cao2026gaze,
+  title={Gaze Target Estimation Anywhere with Concepts},
+  author={Cao, Xu and Yang, Houze and Gunda, Vipin and Zhou, Zhongyi and Xu, Tianyu and Kowdle, Adarsh and Kim, Inki and Rehg, James M},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year={2026}
 }
 ```
 

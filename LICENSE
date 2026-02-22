@@ -3,15 +3,15 @@ Last Updated: November 2025
 
 "Agreement" means the terms and conditions for use, reproduction, distribution and modification of the GazeAnywhere Materials set forth herein.
 
-"GazeAnywhere Materials" means, collectively, Documentation and the models, software and algorithms, including machine-learning model code, trained model weights, inference-enabling code, training-enabling code, fine-tuning enabling code, and other elements of the foregoing distributed by the Licensors and made available under this Agreement.
+"GazeAnywhere Materials" means, collectively, Documentation and the models, software and algorithms, including machine-learning model code, trained model weights, inference-enabling code, training-enabling code, fine-tuning enabling code, and other elements of the foregoing distributed by the Licensors and made available under this Agreement. Dataset and Benchmark is not included.     
 
 "Documentation" means the specifications, manuals and documentation accompanying GazeAnywhere Materials distributed by the Licensors.
 
 "Licensee" or "you" means you, or your employer or any other person or entity (if you are entering into this Agreement on such person or entity's behalf), of the age required under applicable laws, rules or regulations to provide legal consent and that has legal authority to bind your employer or such other person or entity if you are entering in this Agreement on their behalf.
 
-"Licensors" or "we" means the contributors to GazeAnywhere, including but not limited to UIUC Rehg Lab, Google AR, PediaMed AI, and the individual contributors listed in the project documentation.
+"Licensors" or "we" means the contributors to GazeAnywhere, including but not limited to Xu Cao, Houze Yang, and the individual contributors listed in the project documentation in the future.
 
-"Sanctions" means any economic or trade sanctions or restrictions administered or enforced by Canada, the United States, the United Nations, People's Republic of China, the European Union, the United Kingdom.
+"Sanctions" means any economic or trade sanctions or restrictions administered or enforced by the United Nations, the United States, Canada, People's Republic of China, the European Union, the United Kingdom.
 
 "Trade Controls" means any of the following: Sanctions and applicable export and import controls.
 
@@ -48,5 +48,5 @@ b. If you institute litigation or other proceedings against the Licensors or any
 
 7. Governing Law and Jurisdiction. This Agreement will be governed and construed under the laws of the State of California without regard to choice of law principles, and the UN Convention on Contracts for the International Sale of Goods does not apply to this Agreement. The courts of California shall have exclusive jurisdiction of any dispute arising out of this Agreement.
 
-8. Modifications and Amendments. The Licensors may modify this Agreement from time to time; provided that they are similar in spirit to the current version of the Agreement, but may differ in detail to address new problems or concerns. All such changes will be effective immediately. Your continued use of the GazeAnywhere Materials after any modification to this Agreement constitutes your agreement to such modification. Except as provided in this Agreement, no modification or addition to any provision of this Agreement will be binding unless it is in writing and signed by an authorized representative of both you and the Licensors.
+8. Modifications and Amendments. The Licensors (Xu Cao) may modify this Agreement from time to time; provided that they are similar in spirit to the current version of the Agreement, but may differ in detail to address new problems or concerns. All such changes will be effective immediately. Your continued use of the GazeAnywhere Materials after any modification to this Agreement constitutes your agreement to such modification. Except as provided in this Agreement, no modification or addition to any provision of this Agreement will be binding unless it is in writing and signed by an authorized representative of both you and the Licensors.
 
