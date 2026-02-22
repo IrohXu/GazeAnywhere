@@ -5,7 +5,7 @@
 
 </div>
 
-* SAM 3 style gaze target estimation.
+* **SAM 3 style gaze target estimation foundation model**.
 * The first text and visual concept-driven gaze target estimation model.
 * Defines the Promptable Gaze Target Estimation (PGE) task.
 * The first Gaze Target Estimation Agent - AnyGaze Agent, which connects GazeAnywhere to Gemini APIs.      
