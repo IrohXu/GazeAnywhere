@@ -5,9 +5,10 @@
 
 </div>
 
+* SAM 3 style gaze target estimation.
 * The first text and visual concept-driven gaze target estimation model.
 * Defines the Promptable Gaze Target Estimation (PGE) task.
-* The first Gaze Target Estimation Agent - AnyGaze Agent, which connects GazeAnywhere to Gemini 2.5 and Gemini 3.      
+* The first Gaze Target Estimation Agent - AnyGaze Agent, which connects GazeAnywhere to Gemini APIs.      
 
 [Xu Cao](https://www.irohxucao.com/)\*†,
 [Houze Yang]()\*,
@@ -90,9 +91,14 @@ python tools/inference.py \
 TODO
 ``` -->
 
-## Examples
+## Release Timeline
 
-TODO
+- [x] **[Feb 2026]** GazeAnywhere (AnyGaze) paper is accepted to CVPR 2026! 🎉
+- [x] **[Feb 2026]** Released initial inference code and environment setup.
+- [ ] **[Mar 2026]** Release pre-trained model weights on Hugging Face.
+- [ ] **[Mar 2026]** Release the Gaze-Co benchmark for community use.
+- [ ] **[Apr 2026]** Release full training, validation, and evaluation scripts.
+- [ ] **[May 2026]** Launch local Gradio Web UI and interactive Hugging Face Spaces demo.
 
 ## Acknowledgement
 
