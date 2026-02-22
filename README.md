@@ -1,7 +1,7 @@
 <div align="center">
 <h1>Gaze Target Estimation Anywhere with Concepts [CVPR 2026]</h1>
 
-**[UIUC Rehg Lab](https://rehg.org/)**; **[Google AR](https://arvr.google.com/)**
+**[UIUC Rehg Lab](https://rehg.org/)**     **[Google AR](https://arvr.google.com/)**
 
 </div>
 
