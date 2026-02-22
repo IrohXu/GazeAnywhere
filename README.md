@@ -1,15 +1,6 @@
 <div align="center">
 <h1>Gaze Target Estimation Anywhere with Concepts</h1>
 
-**[UIUC Rehg Lab](https://rehg.org/)**  &ensp;   **[Google AR](https://arvr.google.com/)**
-
-</div>
-
-* **SAM 3 style gaze target estimation foundation model**.
-* The first text and visual concept-driven gaze target estimation model.
-* Defines the Promptable Gaze Target Estimation (PGE) task.
-* The first Gaze Target Estimation Agent - AnyGaze Agent, which connects GazeAnywhere to Gemini APIs.      
-
 [Xu Cao](https://www.irohxucao.com/)\*†,
 [Houze Yang]()\*,
 [Vipin Gunda](https://www.vipingunda.com/),
@@ -20,6 +11,16 @@
 [Jim Rehg](https://rehg.org/)†
 
 \* core contributor, † project lead
+
+**[UIUC Rehg Lab](https://rehg.org/)**  &ensp;   **[Google AR](https://arvr.google.com/)**
+
+</div>
+
+* **SAM 3 style gaze target estimation foundation model**.
+* The first text and visual concept-driven gaze target estimation model.
+* Defines the Promptable Gaze Target Estimation (PGE) task.
+* The first Gaze Target Estimation Agent - AnyGaze Agent, which connects GazeAnywhere to Gemini APIs.      
+
 
 ![GazeAnywhere architecture](assets/model_diagram.png?raw=true)
 
