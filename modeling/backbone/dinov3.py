@@ -443,11 +443,3 @@ def build_backbone_dinov3(
     }
     return vit_dict[name](**kwargs)
 
-# if __name__ == "__main__":
-#     model = vit_small()
-#     weight = torch.load("/projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/pretrained/dinov3_vits16_pretrain_lvd1689m-08c60483.pth", map_location="cpu")
-#     model.load_state_dict(weight)
-#     model = model.cuda()
-#     image = torch.randn(1, 3, 224, 224).cuda()
-#     out = model(image)
-#     breakpoint()

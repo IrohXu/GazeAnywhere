@@ -216,38 +216,3 @@ def build_tokenizer_dinov3txt(bpe_path: Optional[str] = None):
     tokenizer = get_tokenizer(bpe_path)
     return tokenizer
 
-
-# if __name__ == "__main__":
-#     model, tokenizer = vit_large()
-#     weight = torch.load("/projects/illinois/eng/cs/jrehg/users/xucao2/ChildGaze/pretrained/dinov3_vitl16_dinotxt-a442d8f5.pth", map_location="cpu")
-#     model.load_state_dict(weight, strict=False)
-#     model = model.cuda()
-#     # image = torch.randn(1, 3, 224, 224).cuda()
-#     import urllib
-#     from PIL import Image
-
-#     def load_image_from_url(url: str) -> Image:
-#         with urllib.request.urlopen(url) as f:
-#             return Image.open(f).convert("RGB")
-
-#     EXAMPLE_IMAGE_URL = "https://dl.fbaipublicfiles.com/dinov2/images/example.jpg"
-#     img_pil = load_image_from_url(EXAMPLE_IMAGE_URL)
-
-#     import torch
-#     from src.dinov3.data.transforms import make_classification_eval_transform
-    
-#     image_preprocess = make_classification_eval_transform()
-#     image_tensor = torch.stack([image_preprocess(img_pil)], dim=0).cuda()
-    
-#     texts = ["photo of dogs", "photo of a chair", "photo of a bowl", "photo of a tupperware"]
-#     text =  tokenizer.tokenize(texts).to("cuda")
-#     out = model(image_tensor, text)
-    
-#     image_features, text_features, _, patch_tokens, backbone_patch_tokens, text_patch_tokens = out
-#     image_features /= image_features.norm(dim=-1, keepdim=True)
-#     text_features /= text_features.norm(dim=-1, keepdim=True)
-#     similarity = (
-#         text_features.cpu().float().detach().numpy() @ image_features.cpu().float().detach().numpy().T
-#     )
-#     print(similarity) 
-    

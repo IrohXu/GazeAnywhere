@@ -126,3 +126,7 @@ If you use GazeAnywhere or the Gaze-Co dataset in your research, please use the 
 }
 ```
 
+
+python tools/clean_data.py --train dataset/anygaze_train_annotations.json \
+  --mvgt dataset/anygaze_mvgt_annotations_new.json \
+  --output dataset/anygaze_merged_single_view.json

@@ -193,15 +193,11 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
-samples/
-BOSCC_test/
-checkpoints/
+
+toolbox/
 output/
-dataset_demo/
-pretrained/
-pre_annotation/
-visualization/
-vlm_benchmark/
+datasets/
+qwen3/
 *.mp4
 *.sbatch
 *.jpg

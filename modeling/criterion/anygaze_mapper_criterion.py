@@ -6,7 +6,7 @@ from fvcore.nn import sigmoid_focal_loss_jit
 from torchvision.ops import generalized_box_iou_loss, box_convert
 
 
-class AnyGazeMapperCriterion(nn.Module):
+class GazeAnywhereMapperCriterion(nn.Module):
     def __init__(
         self,
         heatmap_weight: float = 1000,

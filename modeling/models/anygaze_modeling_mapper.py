@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from typing import Dict, Union
-from ..backbone.dinov2 import Block
+from ..backbone.layers.block import SelfAttentionBlock as Block
 import torchvision
 
 import math
@@ -54,7 +54,7 @@ def repeat_tensors(tensor, repeat_counts):
     return torch.cat(repeated_tensors, dim=0)
 
 
-class AnyGazeModelMapper(nn.Module):
+class GazeAnywhereModelMapper(nn.Module):
     def __init__(
         self,
         backbone: nn.Module,
@@ -113,8 +113,7 @@ class AnyGazeModelMapper(nn.Module):
         self.transformer = nn.Sequential(*[
             Block(
                 dim=self.dim, 
-                num_heads=8, 
-                mlp_ratio=4, 
+                num_heads=8,  
                 drop_path=0.1) for i in range(num_layers)]
         )
         
@@ -133,15 +132,14 @@ class AnyGazeModelMapper(nn.Module):
             nn.Sigmoid()
         )
         
-        if self.inout:
-            self.inout_head = nn.Sequential(
-                nn.Linear(self.dim, 128),
-                nn.ReLU(),
-                nn.Dropout(0.1),
-                nn.Linear(128, 1),
-                # nn.Sigmoid()
-            )
-            self.inout_token = nn.Embedding(1, self.dim)
+        self.inout_head = nn.Sequential(
+            nn.Linear(self.dim, 128),
+            nn.ReLU(),
+            nn.Dropout(0.1),
+            nn.Linear(128, 1),
+            # nn.Sigmoid()
+        )
+        self.inout_token = nn.Embedding(1, self.dim)
 
     def forward(self, x):
         (
@@ -150,7 +148,6 @@ class AnyGazeModelMapper(nn.Module):
             gt_heads,
             gt_heatmaps,
             gt_inouts,
-            image_masks,
         ) = self.preprocess_inputs(x)
         
         B = scenes.size(0)
@@ -188,21 +185,17 @@ class AnyGazeModelMapper(nn.Module):
         base_inout = self.inout_token.weight.unsqueeze(dim=0).repeat(B, 1, 1)
         inout_token = base_inout + img_emb_feats.unsqueeze(1)                 # (B, 1, dim)
 
-        if self.inout:
-            feats = torch.cat([head_token, txt_feats, img_feats, inout_token], dim=1)
-        else:
-            feats = torch.cat([head_token, txt_feats, img_feats], dim=1)
+        feats = torch.cat([head_token, txt_feats, img_feats, inout_token], dim=1)
 
         feats = self.transformer(feats)
         
         bbox_token = feats[:, 0, :]           # (B, dim)
         pred_boxes = self.head_bbox_head(bbox_token)  # (B, 4)
         
-        if self.inout:
-            inout_tokens = feats[:, -1, :] 
-            inout_preds = self.inout_head(inout_tokens).squeeze(dim=-1)
-            # inout_preds = utils.split_tensors(inout_preds, num_ppl_per_img)
-            feats = feats[:, 1+txt_feats.shape[1]:-1, :] # slice off inout tokens from scene tokens
+        inout_tokens = feats[:, -1, :] 
+        inout_preds = self.inout_head(inout_tokens).squeeze(dim=-1)
+        # inout_preds = utils.split_tensors(inout_preds, num_ppl_per_img)
+        feats = feats[:, 1+txt_feats.shape[1]:-1, :] # slice off inout tokens from scene tokens
         
         feats = feats.reshape(feats.shape[0], self.mask_size, self.mask_size, feats.shape[2]).permute(0, 3, 1, 2) # b (h w) c -> b c h w        
         feats = self.heatmap_head(feats)
@@ -276,21 +269,17 @@ class AnyGazeModelMapper(nn.Module):
         base_inout = self.inout_token.weight.unsqueeze(dim=0).repeat(B, 1, 1)
         inout_token = base_inout + img_emb_feats.unsqueeze(1)                 # (B, 1, dim)
 
-        if self.inout:
-            feats = torch.cat([head_token, txt_feats, img_feats, inout_token], dim=1)
-        else:
-            feats = torch.cat([head_token, txt_feats, img_feats], dim=1)
+        feats = torch.cat([head_token, txt_feats, img_feats, inout_token], dim=1)
 
         feats = self.transformer(feats)
         
         bbox_token = feats[:, 0, :]           # (B, dim)
         pred_boxes = self.head_bbox_head(bbox_token)  # (B, 4)
         
-        if self.inout:
-            inout_tokens = feats[:, -1, :] 
-            inout_preds = self.inout_head(inout_tokens).squeeze(dim=-1)
-            # inout_preds = utils.split_tensors(inout_preds, num_ppl_per_img)
-            feats = feats[:, 1+txt_feats.shape[1]:-1, :] # slice off inout tokens from scene tokens
+        inout_tokens = feats[:, -1, :] 
+        inout_preds = self.inout_head(inout_tokens).squeeze(dim=-1)
+        # inout_preds = utils.split_tensors(inout_preds, num_ppl_per_img)
+        feats = feats[:, 1+txt_feats.shape[1]:-1, :] # slice off inout tokens from scene tokens
         
         feats = feats.reshape(feats.shape[0], self.mask_size, self.mask_size, feats.shape[2]).permute(0, 3, 1, 2) # b (h w) c -> b c h w        
         feats = self.heatmap_head(feats)
@@ -324,8 +313,5 @@ class AnyGazeModelMapper(nn.Module):
             else None,
             batched_inputs["gaze_inouts"].to(self.device)
             if "gaze_inouts" in batched_inputs.keys()
-            else None,
-            batched_inputs["image_masks"].to(self.device)
-            if "image_masks" in batched_inputs.keys()
-            else None,
+            else None
         )
