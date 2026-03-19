@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GazeAnywhere | Gaze Target Estimation Foundation Model</title>
+    <meta
+      name="description"
+      content="Official project page template for GazeAnywhere, a promptable gaze target estimation foundation model."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Syne:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="noise"></div>
+    <header class="site-header">
+      <a class="brand" href="#home">GazeAnywhere</a>
+      <nav>
+        <a href="#overview">Overview</a>
+        <a href="#method">Method</a>
+        <a href="#results">Results</a>
+        <a href="#resources">Resources</a>
+      </nav>
+      <a class="button ghost" href="https://github.com/" target="_blank" rel="noreferrer">
+        GitHub
+      </a>
+    </header>
+
+    <main id="home">
+      <section class="hero">
+        <p class="tag">CVPR 2026</p>
+        <h1>Gaze Target Estimation Anywhere with Concepts</h1>
+        <p class="subtitle">
+          A promptable, concept-driven foundation model for end-to-end gaze target estimation
+          in the wild.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="https://arxiv.org/" target="_blank" rel="noreferrer">
+            Read Paper
+          </a>
+          <a class="button ghost" href="https://huggingface.co/IrohXu/GazeAnywhere" target="_blank" rel="noreferrer">
+            Model Checkpoints
+          </a>
+        </div>
+        <div class="hero-grid">
+          <article class="stat-card">
+            <h3>Promptable Gaze</h3>
+            <p>First paradigm introducing Promptable Gaze Target Estimation (PGE).</p>
+          </article>
+          <article class="stat-card">
+            <h3>Text + Visual Concepts</h3>
+            <p>Natural language and visual prompts guide subject localization and gaze prediction.</p>
+          </article>
+          <article class="stat-card">
+            <h3>Foundation Model Design</h3>
+            <p>SAM 3 style architecture with robust in/out-frame and heatmap estimation.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="overview" class="panel">
+        <h2>Project Overview</h2>
+        <p>
+          Existing gaze target methods often rely on brittle, multi-stage pipelines and
+          explicit intermediate annotations. GazeAnywhere reformulates this problem with
+          flexible prompts and solves subject localization plus gaze reasoning in a single model.
+        </p>
+      </section>
+
+      <section id="method" class="panel split">
+        <div>
+          <h2>Method</h2>
+          <p>
+            GazeAnywhere fuses frozen visual and text encoders with a transformer-based detector,
+            jointly predicting subject identity, in/out-of-frame presence, and gaze target heatmaps.
+          </p>
+          <ul>
+            <li>Promptable subject selection using text or visual concepts</li>
+            <li>Unified end-to-end training objective</li>
+            <li>Strong transfer to in-the-wild settings</li>
+          </ul>
+        </div>
+        <div class="media-card">
+          <img src="../assets/model_diagram.png" alt="GazeAnywhere model diagram" />
+        </div>
+      </section>
+
+      <section id="results" class="panel">
+        <h2>Results</h2>
+        <p>
+          Replace this block with your key quantitative metrics, benchmark table, and qualitative
+          visualizations. The layout is intentionally ready for quick extension with paper figures.
+        </p>
+        <div class="result-strip">
+          <div>
+            <span class="k">Task</span>
+            <strong>Promptable Gaze Target Estimation</strong>
+          </div>
+          <div>
+            <span class="k">Venue</span>
+            <strong>CVPR 2026</strong>
+          </div>
+          <div>
+            <span class="k">Code</span>
+            <strong>Open Source</strong>
+          </div>
+        </div>
+      </section>
+
+      <section id="resources" class="panel split">
+        <div>
+          <h2>Resources</h2>
+          <div class="link-list">
+            <a href="https://github.com/" target="_blank" rel="noreferrer">Code Repository</a>
+            <a href="https://huggingface.co/IrohXu/GazeAnywhere" target="_blank" rel="noreferrer">Hugging Face</a>
+            <a href="https://arxiv.org/" target="_blank" rel="noreferrer">Paper (arXiv)</a>
+          </div>
+        </div>
+        <div>
+          <h2>Citation</h2>
+          <pre><code>@inproceedings{cao2026gaze,
+  title={Gaze Target Estimation Anywhere with Concepts},
+  author={Cao, Xu and Yang, Houze and Gunda, Vipin and Zhou, Zhongyi and Xu, Tianyu and Kowdle, Adarsh and Kim, Inki and Rehg, James M},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year={2026}
+}</code></pre>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        Built for the GazeAnywhere research project. Update links, figures, and metrics before
+        release.
+      </p>
+    </footer>
+    <script src="./main.js"></script>
+  </body>
+</html>
