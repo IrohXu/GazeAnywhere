@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>GazeAnywhere | Gaze Target Estimation Foundation Model</title>
+    <title>GazeTrack Agent | Pediatric AR Gaze Study Platform</title>
     <meta
       name="description"
-      content="Official project page template for GazeAnywhere, a promptable gaze target estimation foundation model."
+      content="GazeTrack Agent is a clinician-oriented gaze analysis system for pediatric studies with AR glasses, combining GazeAnywhere, SAM3, and a Claude-centered agent workflow."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -19,124 +19,289 @@
   <body>
     <div class="noise"></div>
     <header class="site-header">
-      <a class="brand" href="#home">GazeAnywhere</a>
+      <a class="brand" href="#home">GazeTrack Agent</a>
       <nav>
         <a href="#overview">Overview</a>
-        <a href="#method">Method</a>
-        <a href="#results">Results</a>
-        <a href="#resources">Resources</a>
+        <a href="#model">Model</a>
+        <a href="#stack">Stack</a>
+        <a href="#features">Features</a>
+        <a href="#interaction">Workflow</a>
+        <a href="#demo">Demo</a>
+        <a href="#team">Team</a>
       </nav>
-      <a class="button ghost" href="https://github.com/" target="_blank" rel="noreferrer">
-        GitHub
-      </a>
+      <a class="button ghost" href="#team">Project Info</a>
     </header>
 
     <main id="home">
       <section class="hero">
-        <p class="tag">CVPR 2026</p>
-        <h1>Gaze Target Estimation Anywhere with Concepts</h1>
-        <p class="subtitle">
-          A promptable, concept-driven foundation model for end-to-end gaze target estimation
-          in the wild.
-        </p>
-        <div class="hero-actions">
-          <a class="button primary" href="https://arxiv.org/" target="_blank" rel="noreferrer">
-            Read Paper
-          </a>
-          <a class="button ghost" href="https://huggingface.co/IrohXu/GazeAnywhere" target="_blank" rel="noreferrer">
-            Model Checkpoints
-          </a>
-        </div>
-        <div class="hero-grid">
-          <article class="stat-card">
-            <h3>Promptable Gaze</h3>
-            <p>First paradigm introducing Promptable Gaze Target Estimation (PGE).</p>
-          </article>
-          <article class="stat-card">
-            <h3>Text + Visual Concepts</h3>
-            <p>Natural language and visual prompts guide subject localization and gaze prediction.</p>
-          </article>
-          <article class="stat-card">
-            <h3>Foundation Model Design</h3>
-            <p>SAM 3 style architecture with robust in/out-frame and heatmap estimation.</p>
-          </article>
-        </div>
-      </section>
-
-      <section id="overview" class="panel">
-        <h2>Project Overview</h2>
-        <p>
-          Existing gaze target methods often rely on brittle, multi-stage pipelines and
-          explicit intermediate annotations. GazeAnywhere reformulates this problem with
-          flexible prompts and solves subject localization plus gaze reasoning in a single model.
-        </p>
-      </section>
-
-      <section id="method" class="panel split">
-        <div>
-          <h2>Method</h2>
-          <p>
-            GazeAnywhere fuses frozen visual and text encoders with a transformer-based detector,
-            jointly predicting subject identity, in/out-of-frame presence, and gaze target heatmaps.
+        <div class="hero-copy">
+          <p class="tag">CVPR Demo | Pediatric AR Gaze Study</p>
+          <h1>Clinical Gaze Intelligence with AR Glasses</h1>
+          <p class="subtitle">
+            GazeTrack Agent is a doctor-facing system for pediatric gaze studies. It combines AR
+            voice interaction, ASR, SAM3 timeline understanding, and a Claude Agent core to turn
+            recorded sessions into structured, queryable clinical insights.
           </p>
-          <ul>
-            <li>Promptable subject selection using text or visual concepts</li>
-            <li>Unified end-to-end training objective</li>
-            <li>Strong transfer to in-the-wild settings</li>
+          <div class="hero-actions">
+            <a class="button primary" href="#demo">View Demo Story</a>
+            <a class="button ghost" href="#interaction">See Workflow</a>
+          </div>
+          <div class="hero-badges">
+            <span>Doctor-first UX</span>
+            <span>Post-session analysis</span>
+            <span>Controllable execution</span>
+          </div>
+        </div>
+        <aside class="hero-visual panel">
+          <p class="k">System Stack</p>
+          <article class="stat-card">
+            <h3>GazeAnywhere</h3>
+            <p>Foundation gaze target estimation as the core perception layer.</p>
+          </article>
+          <article class="stat-card">
+            <h3>SAM3</h3>
+            <p>Object-level scene timelines to align gaze with context over time.</p>
+          </article>
+          <article class="stat-card">
+            <h3>ASR</h3>
+            <p>Converts AR voice input into text commands for downstream task parsing.</p>
+          </article>
+          <article class="stat-card">
+            <h3>Claude Agent</h3>
+            <p>Natural-language orchestration, constrained execution, readable outputs.</p>
+          </article>
+        </aside>
+      </section>
+
+      <section id="overview" class="panel section">
+        <div class="section-head">
+          <span class="k">Overview</span>
+          <h2>Built for Pediatric Gaze Study in Real Clinical Workflows</h2>
+        </div>
+        <p class="lead">
+          The product focus is practical adoption: clinicians can define profiles, capture AR
+          recordings, and ask temporal gaze questions without dealing with model internals. The
+          system is service-oriented, explicit about lifecycle control, and designed to integrate
+          into research and hospital-side pipelines.
+        </p>
+        <div class="quick-grid">
+          <article class="stat-card">
+            <h3>For Doctors</h3>
+            <p>Supports doctor-guided study sessions and replay review workflows.</p>
+          </article>
+          <article class="stat-card">
+            <h3>For Engineering</h3>
+            <p>Clear interfaces via WebSocket and HTTP for integration and observability.</p>
+          </article>
+          <article class="stat-card">
+            <h3>For Research</h3>
+            <p>Persistent artifacts per profile for repeatable analysis and comparison.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="model" class="panel section split model-section">
+        <div>
+          <div class="section-head">
+            <span class="k">1. Model</span>
+            <h2>GazeAnywhere as the Perception Backbone</h2>
+          </div>
+          <p>
+            GazeAnywhere powers gaze target estimation from recording data and provides the primary
+            perception outputs used downstream. This keeps the analysis stack focused on practical
+            inference and robust replay behavior.
+          </p>
+          <ul class="clean-list">
+            <li>Foundation gaze estimation for unconstrained scenes</li>
+            <li>Serviceized for deployment and independent scaling</li>
+            <li>Produces profile-level outputs for temporal querying</li>
           </ul>
         </div>
-        <div class="media-card">
-          <img src="../assets/model_diagram.png" alt="GazeAnywhere model diagram" />
+        <figure class="media-card model-media">
+          <img src="./figure/model_diagram.png" alt="GazeAnywhere model diagram" />
+          <figcaption>GazeAnywhere model overview.</figcaption>
+        </figure>
+      </section>
+
+      <section id="stack" class="panel section">
+        <div class="section-head">
+          <span class="k">2-3. Core Stack</span>
+          <h2>ASR + SAM3 + Claude Agent</h2>
+        </div>
+        <div class="stack-grid">
+          <article class="stat-card">
+            <h3>AR Voice + ASR</h3>
+            <p>
+              Voice commands from AR glasses are transcribed into clean text tasks before agent
+              planning begins.
+            </p>
+          </article>
+          <article class="stat-card">
+            <h3>SAM3 Timeline Layer</h3>
+            <p>
+              SAM3 segmentation builds scene-object timelines so gaze events can be anchored to
+              what exists in the frame at each time point.
+            </p>
+          </article>
+          <article class="stat-card">
+            <h3>Claude Agent Core</h3>
+            <p>
+              Claude Agent handles language understanding, structured task planning, and response
+              generation for clinician-facing interaction.
+            </p>
+          </article>
+          <article class="stat-card">
+            <h3>Controlled Runtime</h3>
+            <p>
+              Agent execution runs in a constrained sandbox with allowlisted tools to prioritize
+              stability and predictable behavior.
+            </p>
+          </article>
         </div>
       </section>
 
-      <section id="results" class="panel">
-        <h2>Results</h2>
-        <p>
-          Replace this block with your key quantitative metrics, benchmark table, and qualitative
-          visualizations. The layout is intentionally ready for quick extension with paper figures.
-        </p>
-        <div class="result-strip">
-          <div>
-            <span class="k">Task</span>
-            <strong>Promptable Gaze Target Estimation</strong>
-          </div>
-          <div>
-            <span class="k">Venue</span>
-            <strong>CVPR 2026</strong>
-          </div>
-          <div>
-            <span class="k">Code</span>
-            <strong>Open Source</strong>
-          </div>
+      <section id="features" class="panel section">
+        <div class="section-head">
+          <span class="k">4. Functional Scope</span>
+          <h2>What the Current System Can Do</h2>
+        </div>
+        <div class="feature-grid">
+          <article class="stat-card">
+            <h3>Profile Setup</h3>
+            <p>Create tracking profiles from appearance-based descriptions.</p>
+          </article>
+          <article class="stat-card">
+            <h3>Recording Control</h3>
+            <p>Manage START, frame upload, and STOP via a dedicated channel.</p>
+          </article>
+          <article class="stat-card">
+            <h3>Trajectory Overlay</h3>
+            <p>Generate offline visual overlays for replay and review.</p>
+          </article>
+          <article class="stat-card">
+            <h3>Temporal Query</h3>
+            <p>Ask who/what was gazed at in a selected time range.</p>
+          </article>
+          <article class="stat-card">
+            <h3>Object Window Search</h3>
+            <p>Find when a target object was looked at, with semantic matching.</p>
+          </article>
+          <article class="stat-card">
+            <h3>Behavior Analysis</h3>
+            <p>Analyze gaze switch events and dwell segments across sessions.</p>
+          </article>
         </div>
       </section>
 
-      <section id="resources" class="panel split">
+      <section id="interaction" class="panel section split">
         <div>
-          <h2>Resources</h2>
+          <div class="section-head">
+            <span class="k">5. Interaction</span>
+            <h2>AR Voice to Analysis Workflow</h2>
+          </div>
+          <ol class="flow-list">
+            <li>Clinician speaks commands through the AR device interface.</li>
+            <li>ASR converts speech into a normalized text command.</li>
+            <li>Claude Agent parses intent and maps it into structured executable tasks.</li>
+            <li>Execution uses <code>/ws/agent</code> and <code>/ws/recording</code> channels.</li>
+            <li>Pipeline runs formatter -> codegen -> sandbox execution -> naturalizer.</li>
+            <li>Artifacts are persisted per profile for replay and later comparison.</li>
+          </ol>
+        </div>
+        <div class="endpoint-box">
+          <h3>Service Interface</h3>
+          <pre><code>WebSocket
+/ws/agent
+/ws/recording
+
+HTTP
+/command
+/status
+/health
+
+Input Frontend
+AR NLP voice input -> ASR text
+
+Model Services
+GazeAnywhere: /gaze, /health
+SAM3 segmentation service
+Qwen spatial API: reserved slot</code></pre>
+        </div>
+      </section>
+
+      <section id="demo" class="panel section split">
+        <div>
+          <div class="section-head">
+            <span class="k">6-7. Demo & Use Cases</span>
+            <h2>Demo Narrative for CVPR</h2>
+          </div>
+          <p>
+            The demo follows a complete clinical loop: set profile -> record AR session -> run
+            post-session analysis -> review timeline and trajectory outputs. It demonstrates
+            usability, controllability, and integration readiness.
+          </p>
+          <div class="result-strip">
+            <div>
+              <span class="k">Demo Step</span>
+              <strong>Profile Initialization</strong>
+            </div>
+            <div>
+              <span class="k">Demo Step</span>
+              <strong>Recording Session</strong>
+            </div>
+            <div>
+              <span class="k">Demo Step</span>
+              <strong>Temporal QA & Replay</strong>
+            </div>
+          </div>
+        </div>
+        <div class="usecase-box">
+          <h3>Typical Use Cases</h3>
+          <ul class="clean-list">
+            <li>Doctor-guided pediatric attention assessments</li>
+            <li>Session replay for behavior interpretation and discussion</li>
+            <li>Longitudinal comparison across repeated visits</li>
+            <li>Research data curation for gaze-object interactions</li>
+          </ul>
+          <h3>8. Hardware: AR Glasses</h3>
+          <p>
+            AR glasses are the primary capture device, providing first-person recordings that map
+            naturally to child-environment interaction in study settings.
+          </p>
+        </div>
+      </section>
+
+      <section id="team" class="panel section split">
+        <div>
+          <div class="section-head">
+            <span class="k">9. Team & Project</span>
+            <h2>Built by Vision + Medical + Agent Systems Collaboration</h2>
+          </div>
+          <p>
+            The project combines computer vision, service engineering, and clinical workflow design
+            to deliver an adoptable gaze analysis platform. Current scope emphasizes recorded-data
+            analysis with stable, controlled execution.
+          </p>
+          <p>
+            Real-time "where is the child looking now" live queries are not included in the current
+            release and are tracked as future expansion.
+          </p>
+        </div>
+        <div class="link-box">
+          <h3>Project Links</h3>
           <div class="link-list">
-            <a href="https://github.com/" target="_blank" rel="noreferrer">Code Repository</a>
-            <a href="https://huggingface.co/IrohXu/GazeAnywhere" target="_blank" rel="noreferrer">Hugging Face</a>
-            <a href="https://arxiv.org/" target="_blank" rel="noreferrer">Paper (arXiv)</a>
+            <a href="https://huggingface.co/IrohXu/GazeAnywhere" target="_blank" rel="noreferrer">GazeAnywhere Service</a>
+            <a href="#interaction">Interaction Interfaces</a>
+            <a href="#demo">Demo Workflow</a>
           </div>
-        </div>
-        <div>
-          <h2>Citation</h2>
-          <pre><code>@inproceedings{cao2026gaze,
-  title={Gaze Target Estimation Anywhere with Concepts},
-  author={Cao, Xu and Yang, Houze and Gunda, Vipin and Zhou, Zhongyi and Xu, Tianyu and Kowdle, Adarsh and Kim, Inki and Rehg, James M},
-  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  year={2026}
-}</code></pre>
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
       <p>
-        Built for the GazeAnywhere research project. Update links, figures, and metrics before
-        release.
+        GazeTrack Agent for pediatric AR gaze studies: clinician-centered, integration-ready, and
+        extensible for future multimodal reasoning.
       </p>
     </footer>
     <script src="./main.js"></script>
