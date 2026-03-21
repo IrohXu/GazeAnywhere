@@ -1,4 +1,6 @@
-const revealTargets = document.querySelectorAll(".panel, .stat-card");
+const revealTargets = document.querySelectorAll(
+  ".panel, .model-card, .pipe-stage, .agent-stage, .demo-step, .flow-node, .diagram-box, .example-cmd, .demo-video-placeholder, .hardware-placeholder, .ga-hero-card, .ga-detail-card"
+);
 
 const observer = new IntersectionObserver(
   (entries) => {
