@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>GazeTrack Agent | AR Gaze Intelligence Platform</title>
+    <title>GazeAgent | AR Gaze Intelligence Platform</title>
     <meta
       name="description"
-      content="GazeTrack Agent: an agentic AR platform for voice-driven gaze analysis in pediatric clinical studies, powered by GazeAnywhere, SAM3, Qwen, and Claude."
+      content="GazeAgent: an agentic AR platform for voice-driven gaze analysis in pediatric clinical studies, powered by GazeAnywhere, SAM 3, SigLIP2, Qwen, faster-whisper, and Claude."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -19,14 +19,15 @@
   <body>
     <div class="noise"></div>
     <header class="site-header">
-      <a class="brand" href="#home">GazeTrack Agent</a>
+      <a class="brand" href="#home">GazeAgent</a>
       <nav>
         <a href="#pipeline">Pipeline</a>
         <a href="#gazeanywhere">GazeAnywhere</a>
-        <a href="#models">Models</a>
+        <a href="#models">Grounding</a>
         <a href="#agent">Agent</a>
         <a href="#interaction">Interaction</a>
         <a href="#demo">Demo</a>
+        <a href="#children-vis">Clinical</a>
       </nav>
       <a class="button ghost" href="#gazeanywhere">CVPR 2026</a>
     </header>
@@ -51,14 +52,15 @@
             real-world settings.
           </p>
           <p class="subtitle">
-            GazeTrack Agent addresses this challenge through an end-to-end platform
+            GazeAgent addresses this challenge through an end-to-end platform
             designed for pediatric clinical studies. During a session, AR glasses
             continuously capture egocentric video. GazeAnywhere, a promptable gaze
             model accepted to CVPR 2026, estimates gaze targets in real time from
             natural-language subject descriptions, avoiding reliance on brittle
-            detection pipelines. In parallel, Qwen and SAM3 construct a semantic
-            scene representation that associates gaze locations with named objects
-            in the environment. Finally, a Claude-based reasoning agent supports
+            detection pipelines. Qwen builds a scene vocabulary during capture, and
+            SAM 3 with SigLIP2 ground it into named objects after the session,
+            associating gaze locations with entities in the environment. Finally, a
+            Claude-based reasoning agent supports
             open-ended post-session queries through voice interaction, enabling
             clinicians and researchers to move more directly from recorded behavior
             to interpretable, actionable insights.
@@ -75,9 +77,9 @@
           </div>
         </div>
         <div class="hero-right">
-          <span class="k">System Architecture</span>
+          <span class="k">Overview</span>
           <figure class="hero-arch-figure">
-            <img src="./figure/agent_diagram.png" alt="GazeTrack Agent system architecture" />
+            <img src="./figure/Open_graph.png" alt="GazeAgent overview: capture, query, and insight" />
           </figure>
         </div>
       </section>
@@ -89,68 +91,75 @@
           <h2>Real-Time Capture + Post-Session Query</h2>
         </div>
         <p class="lead">
-          The system operates in two phases. During recording, AR glasses stream
-          egocentric frames to the server where GazeAnywhere runs promptable gaze
-          estimation in real time, while Qwen builds a scene vocabulary in the background.
-          After the session, SAM3 runs on the full video to produce object-level segmentation &mdash;
-          because clinically, knowing <em>what</em> the subject was looking at matters as
-          much as knowing <em>where</em>. The Claude agent then handles open-ended voice
-          queries over the resulting gaze-object timeline.
+          GazeAgent decouples capture from analysis. During recording, the AR glasses
+          stay passive and stream egocentric frames to an on-premise backend, where
+          GazeAnywhere and Qwen run continuously in the background &mdash; so the heavy
+          computation is front-loaded and never enters the clinician's field of view.
+          The expensive grounding step (SAM 3 + SigLIP2) runs only once, on the first
+          query, to finalize precise gaze&ndash;object attribution. The Claude code agent
+          then answers open-ended voice queries over the resulting structured gaze
+          timeline, because clinically, knowing <em>what</em> the child looked at matters
+          as much as knowing <em>where</em>.
         </p>
 
         <div class="section-head" style="margin-top: 0.3rem;">
-          <span class="k">Phase 1</span>
-          <h3>Real-Time Recording</h3>
+          <span class="k">Phase 1 &middot; Background</span>
+          <h3>Real-Time Perception During Recording</h3>
         </div>
         <div class="pipeline-strip">
           <div class="pipe-stage">
             <div class="pipe-num">1</div>
             <h3>Capture</h3>
-            <p>AR glasses stream egocentric video frames to the server via WebSocket.</p>
+            <p>AR glasses stream egocentric frames to the backend over WebSocket; the device stays a passive capture and audio-query interface.</p>
           </div>
           <div class="pipe-connector"></div>
           <div class="pipe-stage">
             <div class="pipe-num">2</div>
-            <h3>Gaze Track</h3>
-            <p>GazeAnywhere runs per-frame gaze estimation conditioned on the subject prompt.</p>
+            <h3>Gaze Estimation</h3>
+            <p>GazeAnywhere predicts the subject box, 2D gaze point, and an In/Out-of-frame flag from the prompt; an Eye-Contact CNN verifies looks at the observer.</p>
           </div>
           <div class="pipe-connector"></div>
           <div class="pipe-stage">
             <div class="pipe-num">3</div>
             <h3>Scene Understanding</h3>
-            <p>Qwen runs at reduced framerate to identify objects in the scene, building a real-time semantic vocabulary.</p>
+            <p>Qwen 3.5-27B runs on key frames every 2&nbsp;s, emitting hierarchical labels &mdash; broad categories plus detailed appearance descriptions.</p>
           </div>
         </div>
 
         <div class="section-head" style="margin-top: 0.5rem;">
-          <span class="k">Phase 2</span>
-          <h3>Post-Session Query</h3>
+          <span class="k">Phase 2 &middot; On Query</span>
+          <h3>Grounding + Post-Session Analysis</h3>
         </div>
         <div class="pipeline-strip">
           <div class="pipe-stage">
             <div class="pipe-num">4</div>
-            <h3>SAM3 Tracking</h3>
-            <p>Runs post-session on the full recorded video for temporally-consistent object segmentation and ID tracking, mapping gaze points to named objects.</p>
+            <h3>Grounding &amp; Timeline</h3>
+            <p>SAM 3 (video mode) segments broad categories into tracked boxes; SigLIP2 matches detailed descriptions; gaze-object attribution + temporal smoothing build the gaze timeline.</p>
           </div>
           <div class="pipe-connector"></div>
           <div class="pipe-stage">
             <div class="pipe-num">5</div>
             <h3>Voice Query</h3>
-            <p>Clinician asks questions via voice. ASR transcribes speech to text on the server.</p>
+            <p>faster-whisper (large-v3) transcribes the clinician's spoken question server-side, biased with gaze-tracking vocabulary.</p>
           </div>
           <div class="pipe-connector"></div>
           <div class="pipe-stage">
             <div class="pipe-num">6</div>
             <h3>Agent Reason</h3>
-            <p>Claude Agent classifies intent, generates executable analysis code in a sandbox.</p>
+            <p>The Claude code agent parses intent and generates executable Python over the structured timeline &mdash; no end-to-end guessing.</p>
           </div>
           <div class="pipe-connector"></div>
           <div class="pipe-stage">
             <div class="pipe-num">7</div>
             <h3>Respond</h3>
-            <p>Results returned as natural-language answers, trajectory overlays, or gaze statistics.</p>
+            <p>Returns a natural-language answer plus on-demand visual evidence: gaze-point overlays, object boxes, or a Gantt-style gaze timeline.</p>
           </div>
         </div>
+
+        <figure class="media-card pipeline-system-figure">
+          <img src="./figure/GazeAgent_System.png" alt="GazeAgent end-to-end system architecture: AR glasses client, backend gaze-centric perception, gaze-object grounding and temporal modeling, query-driven analysis, and results rendered to the AR screen" />
+          <figcaption>End-to-end architecture: AR glasses client &rarr; gaze-centric perception (GazeAnywhere, Eye-Contact CNN, Qwen) &rarr; gaze-object grounding &amp; temporal modeling (SAM 3, SigLIP2) &rarr; query-driven analysis (faster-whisper, Claude code agent) &rarr; results rendered back to the AR screen.</figcaption>
+        </figure>
       </section>
 
       <!-- ── GazeAnywhere ── -->
@@ -191,8 +200,8 @@
             <div class="ga-capabilities">
               <span>Text-prompted subject localization</span>
               <span>Gaze target heatmap</span>
+              <span>Head bounding box</span>
               <span>In/out-of-frame prediction</span>
-              <span>Eye contact detection</span>
               <span>Open-vocabulary prompting</span>
             </div>
           </div>
@@ -239,62 +248,66 @@
       <section id="models" class="panel section">
         <div class="section-head">
           <span class="k">Supporting Models</span>
-          <h2>Scene Understanding & Orchestration</h2>
+          <h2>Scene Understanding & Grounding</h2>
         </div>
         <p class="lead">
-          Three models complement GazeAnywhere: SAM3 provides temporal object
-          tracking, Qwen builds the scene vocabulary, and Claude orchestrates
-          the full pipeline through an agentic interface.
+          To turn a raw gaze point into <em>what</em> the child looked at, three
+          on-premise vision models run as a coarse-to-fine chain: Qwen names the
+          scene, SAM 3 localizes it, and SigLIP2 binds the two together. Each stage
+          consumes the previous stage's output.
         </p>
         <div class="supporting-models-grid">
           <article class="model-card">
             <div class="model-card-header">
-              <div class="model-badge seg">Segmentation</div>
+              <div class="model-badge scene">Step 1 &middot; Naming</div>
+              <h3>Qwen 3.5-27B</h3>
+            </div>
+            <p class="model-role">Visual Scene Comprehension (local VLM)</p>
+            <p>
+              Processes key frames every 2&nbsp;s as a strict salient-entity
+              summarizer, emitting <strong>hierarchical labels</strong>: broad
+              categories (e.g. <em>"toy"</em>) plus detailed descriptions
+              (e.g. <em>"blue toy dinosaur"</em>).
+            </p>
+            <div class="model-highlight">
+              <span class="k">Feeds &rarr;</span>
+              <strong>Broad categories to SAM 3, detailed phrases to SigLIP2</strong>
+            </div>
+          </article>
+
+          <article class="model-card">
+            <div class="model-card-header">
+              <div class="model-badge seg">Step 2 &middot; Localizing</div>
               <h3>SAM 3</h3>
             </div>
             <p class="model-role">Object Tracking & Segmentation</p>
             <p>
-              Temporally-consistent object segmentation across recorded sessions.
-              Maps gaze points to specific objects &mdash;
-              answering <em>what</em> was being looked at, not just <em>where</em>.
+              Takes Qwen's <strong>broad categories</strong> and runs in video mode,
+              extracting temporally consistent masks that are converted into stable,
+              tracked bounding boxes &mdash; reliable spatial anchors, but unlabeled
+              at the fine-grained level.
             </p>
             <div class="model-highlight">
-              <span class="k">Key output</span>
-              <strong>Per-frame object &times; bounding box timeline</strong>
+              <span class="k">Depends on &larr; Qwen &nbsp;|&nbsp; Feeds &rarr;</span>
+              <strong>Tracked per-object boxes to SigLIP2</strong>
             </div>
           </article>
 
           <article class="model-card">
             <div class="model-card-header">
-              <div class="model-badge scene">Scene Understanding</div>
-              <h3>Qwen3.5 35B</h3>
+              <div class="model-badge match">Step 3 &middot; Binding</div>
+              <h3>SigLIP2</h3>
             </div>
-            <p class="model-role">Visual Scene Comprehension</p>
+            <p class="model-role">Vision-Language Matching Bridge</p>
             <p>
-              Periodic spatial queries identify and name objects in the scene.
-              Builds the semantic vocabulary that bridges segmentation masks
-              to queryable object names.
+              Closes the loop: for each SAM 3 box, it scores Qwen's
+              <strong>detailed descriptions</strong> within that category and assigns
+              the best-matching phrase &mdash; resolving multi-object ambiguity that
+              SAM 3's coarse masks leave open.
             </p>
             <div class="model-highlight">
-              <span class="k">Key output</span>
-              <strong>Scene object vocabulary for semantic querying</strong>
-            </div>
-          </article>
-
-          <article class="model-card">
-            <div class="model-card-header">
-              <div class="model-badge agent-badge">Orchestration</div>
-              <h3>Claude Sonnet</h3>
-            </div>
-            <p class="model-role">Agentic Task Planning & Execution</p>
-            <p>
-              Interprets clinician queries, generates sandboxed analysis code,
-              dispatches model calls, and synthesizes results into clinical language.
-              The agent &mdash; not a tool.
-            </p>
-            <div class="model-highlight">
-              <span class="k">Key output</span>
-              <strong>Task plans + natural-language clinical insights</strong>
+              <span class="k">Depends on &larr; Qwen + SAM 3</span>
+              <strong>Final phrase &rarr; bounding-box grounding</strong>
             </div>
           </article>
         </div>
@@ -307,9 +320,13 @@
           <h2>Multi-Stage LLM Agent with Controlled Execution</h2>
         </div>
         <p class="lead">
-          Not a single prompt-response call. The agent decomposes each request into a validated
-          task spec, generates executable code against a constrained API surface, runs it in
-          a sandbox, and converts outputs into clinician-facing language.
+          Not a single prompt-response call. The agent runs as a staged pipeline
+          &mdash; Formatter &rarr; Code Generator &rarr; sandboxed execution &rarr;
+          Naturalizer &mdash; that decomposes each request into a validated JSON spec,
+          generates a single executable Python function over the structured gaze
+          timeline, runs it in a locked-down sandbox, and converts the result back into
+          clinician-facing language. It uses no external orchestration framework like
+          LangChain.
         </p>
         <div class="agent-stages">
           <div class="agent-stage">
@@ -319,11 +336,12 @@
             </div>
             <div class="stage-content">
               <h3>Formatter</h3>
-              <p class="stage-model">Claude Sonnet</p>
+              <p class="stage-model">Claude Sonnet 4.6</p>
               <p>
-                Classifies free-form voice input into a structured task spec &mdash;
-                task type, subject profile, time range, query targets.
-                Rejects ambiguous requests before computation begins.
+                Parses free-form voice input into a strict JSON task spec.
+                An ethical-refusal rule maps subjective constructs (e.g. <em>"Was the
+                child engaged?"</em>) to <code>status: "ambiguous"</code> with a concrete
+                reformulation, so the system never hallucinates inner-state measurements.
               </p>
             </div>
           </div>
@@ -334,11 +352,11 @@
             </div>
             <div class="stage-content">
               <h3>Code Generator</h3>
-              <p class="stage-model">Claude Sonnet</p>
+              <p class="stage-model">Claude Sonnet 4.6</p>
               <p>
-                Translates the validated spec into a Python function that calls
-                only allowlisted perception APIs. No imports, no file access &mdash;
-                composable analysis logic only.
+                Emits a single <code>run_task(context)</code> Python function from a
+                curated catalogue of allowed helpers and seven few-shot templates.
+                It skips chain-of-thought to cut latency, composing analysis logic only.
               </p>
             </div>
           </div>
@@ -351,9 +369,10 @@
               <h3>Sandbox Runtime</h3>
               <p class="stage-model">Constrained Python</p>
               <p>
-                Generated code runs in an isolated namespace. Built-ins blocked;
-                only pre-injected helpers for gaze data, timeline queries,
-                semantic matching, and visualization.
+                The host strips markdown fences, compiles with <code>compile()</code>,
+                and runs via <code>exec()</code> in an isolated namespace where
+                <code>__builtins__</code> is emptied &mdash; blocking <code>eval</code>,
+                <code>import</code>, and <code>open</code>.
               </p>
             </div>
           </div>
@@ -363,10 +382,11 @@
             </div>
             <div class="stage-content">
               <h3>Naturalizer</h3>
-              <p class="stage-model">Claude Haiku</p>
+              <p class="stage-model">Claude Haiku 4.5</p>
               <p>
-                Converts structured results into a readable sentence for the clinician &mdash;
-                closing the loop from voice question to spoken answer.
+                Maps the structured execution dictionary into a concise reply using
+                predefined response templates &mdash; closing the loop from voice
+                question to spoken answer.
               </p>
             </div>
           </div>
@@ -393,14 +413,27 @@
               interface supports replay queries, trajectory review, and behavioral analysis.
             </p>
             <div class="interaction-examples">
-              <span class="k">Example voice commands</span>
-              <div class="example-cmd">"Track the boy in the blue shirt"</div>
-              <div class="example-cmd">"Load profile for patient ID 123345"</div>
-              <div class="example-cmd">"What did the child look at in the last 30 seconds?"</div>
-              <div class="example-cmd">"Did the child look at the red toy in the first minute?"</div>
-              <div class="example-cmd">"Show all objects the child gazed at"</div>
-              <div class="example-cmd">"How many times did the child look at the nurse?"</div>
-              <div class="example-cmd">"Analyze gaze shifts between 10 and 45 seconds"</div>
+              <span class="k">Supported query categories</span>
+              <div class="query-cat">
+                <strong>Entity &amp; eye contact</strong>
+                <p>Whether and what the child attended to &mdash; environmental objects or the interactor &mdash; as boolean checks, timing, and accumulated duration.</p>
+              </div>
+              <div class="query-cat">
+                <strong>Macro-behavioral profiling</strong>
+                <p>A holistic gaze-shift timeline summarizing the chronological sequence of attention allocation across the session.</p>
+              </div>
+              <div class="query-cat">
+                <strong>Sequential &amp; relational logic</strong>
+                <p>Temporal dependencies between events &mdash; what the child looked at before or after a cue, gaze shifts, and ordering of fixations.</p>
+              </div>
+              <div class="query-cat">
+                <strong>Temporal slicing</strong>
+                <p>Any query can be scoped to a phase of the interaction (e.g. the first 30 seconds, or a 10&ndash;45 s window).</p>
+              </div>
+              <div class="query-cat">
+                <strong>Boundary defense</strong>
+                <p>Ambiguous or out-of-scope requests are met with a clarification prompt or refusal &mdash; never a hallucinated answer.</p>
+              </div>
             </div>
           </div>
           <div class="interaction-diagram">
@@ -421,8 +454,9 @@
               <strong>Insight + Visualization</strong>
               <p>Spoken answer, trajectory overlays, temporal analysis</p>
             </div>
-            <figure class="hardware-figure" style="margin-top: 0.6rem;">
-              <img src="./figure/glass.png" alt="AR Glasses" />
+            <figure class="hardware-figure" style="margin-top: 1.6rem;">
+              <img src="./figure/RayNeo-X3-Pro.jpg" alt="RayNeo X3 Pro AR Glasses" />
+              <figcaption>RayNeo X3 Pro &mdash; 76&nbsp;g, dual front cameras, Micro LED display.</figcaption>
             </figure>
           </div>
         </div>
@@ -435,21 +469,24 @@
           <h2>System Demonstration</h2>
         </div>
         <p class="lead">
-          Due to IRB restrictions, we cannot show recordings of child patients.
-          The demo below is conducted on a lab member as the subject, demonstrating
-          the full pipeline: egocentric capture, gaze tracking, and post-session
-          natural-language queries.
+          We cannot capture egocentric-view interaction from children, so the system
+          is demonstrated through two mock setups. The first runs the complete pipeline
+          &mdash; egocentric capture, gaze tracking, and post-session natural-language
+          queries &mdash; on a consenting lab member acting as the subject. The second
+          (further down) applies gaze-target grounding to third-person children
+          interaction videos recorded under standardized clinical protocols, which is
+          permitted under our IRB.
         </p>
 
         <!-- Video -->
         <div class="section-head" style="margin-top: 0.2rem;">
-          <span class="k">Gaze Trajectory Visualization</span>
+          <span class="k">Setup 1 &middot; Lab Member (Egocentric)</span>
           <h3>Post-processed gaze overlay on the recorded session</h3>
         </div>
         <div class="demo-video-embed">
           <iframe
-            src="https://www.youtube.com/embed/Hlm3fvRwSZc"
-            title="GazeTrack Agent Demo"
+            src="https://www.youtube.com/embed/zzbXcrqpZnw"
+            title="GazeAgent Demo"
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen>
@@ -462,52 +499,106 @@
           <h3>Agent interaction over recorded gaze data</h3>
         </div>
         <div class="demo-terminal">
+          <div class="demo-divider"><span>— gaze objects &amp; eye contact —</span></div>
           <div class="demo-exchange">
-            <div class="demo-q">Did the man look at the mouse?</div>
-            <div class="demo-a">Yes, the man looked at the mouse &mdash; 4 window(s) found.</div>
+            <div class="demo-q">What did the man look at?</div>
+            <div class="demo-a">The subject looked at: bottle, laptop, mouse.</div>
           </div>
           <div class="demo-exchange">
-            <div class="demo-q">When did the man look at the mouse?</div>
-            <div class="demo-a">The subject looked at mouse in 4 window(s):<br>
-              &nbsp;&nbsp;32.0s &ndash; 33.2s<br>
-              &nbsp;&nbsp;34.2s &ndash; 37.3s<br>
-              &nbsp;&nbsp;37.9s &ndash; 53.0s<br>
-              &nbsp;&nbsp;53.2s &ndash; 58.7s
+            <div class="demo-q">Did the man perform any eye contact?</div>
+            <div class="demo-a">Yes, the subject made eye contact in 2 window(s).</div>
+          </div>
+          <div class="demo-exchange">
+            <div class="demo-q">Did the man look at the chocolate?</div>
+            <div class="demo-a">No object matching 'chocolate' was found. Available objects: man in yellow t-shirt, laptop, bottle, mouse, monitor.</div>
+          </div>
+
+          <div class="demo-divider"><span>— temporal &amp; sequential —</span></div>
+          <div class="demo-exchange">
+            <div class="demo-q">How long did the man look at the mouse?</div>
+            <div class="demo-a">The subject looked at the mouse for 25.1 seconds in 1 window.</div>
+          </div>
+          <div class="demo-exchange">
+            <div class="demo-q">When did the man look at the laptop?</div>
+            <div class="demo-a">The subject looked at the laptop in 2 window(s):<br>
+              &nbsp;&nbsp;27.4s &ndash; 29.7s<br>
+              &nbsp;&nbsp;58.3s &ndash; 79.8s
             </div>
           </div>
           <div class="demo-exchange">
-            <div class="demo-q">Analyze the gaze shifts.</div>
-            <div class="demo-a demo-a-mono">laptop &rArr; bottle at 5.1s<br>
-              bottle &rArr; man at 16.2s<br>
-              man &rArr; bottle at 17.2s<br>
-              bottle &rArr; man at 18.0s<br>
-              man &rArr; bottle at 18.6s<br>
-              bottle &rArr; laptop at 28.5s<br>
-              laptop &rArr; bottle at 31.0s<br>
-              bottle &rArr; mouse at 32.0s<br>
-              mouse &rArr; man at 37.3s<br>
-              man &rArr; mouse at 37.9s<br>
-              mouse &rArr; bottle at 58.7s<br>
-              bottle &rArr; laptop at 60.0s<br>
-              laptop &rArr; man at 77.7s<br>
-              <span class="demo-summary">(17 shifts total)</span>
+            <div class="demo-q">What did the man look at before the first time looking at the laptop?</div>
+            <div class="demo-a">The subject looked at bottle (4.6s &ndash; 25.7s).</div>
+          </div>
+
+          <div class="demo-divider"><span>— gaze shifts &amp; time windows —</span></div>
+          <div class="demo-exchange">
+            <div class="demo-q">Did the man perform any gaze shift from the bottle to the laptop?</div>
+            <div class="demo-a">Yes, the subject performed the gaze shift from bottle to laptop at 27.4s.</div>
+          </div>
+          <div class="demo-exchange">
+            <div class="demo-q">What's the man's gaze shift in the last 30 seconds?</div>
+            <div class="demo-a demo-a-mono">mouse &rArr; bottle at 57.1s<br>
+              bottle &rArr; laptop at 58.3s
             </div>
           </div>
+          <div class="demo-exchange">
+            <div class="demo-q">Did the man perform any eye contact from 30s to 45s?</div>
+            <div class="demo-a">No eye contact detected in that time range.</div>
+          </div>
+
+          <div class="demo-divider"><span>— out of scope —</span></div>
           <div class="demo-exchange demo-exchange-oob">
-            <div class="demo-q">Shine my shoes.</div>
-            <div class="demo-a demo-a-reject">I can only help with gaze-tracking tasks like analyzing where someone looked, finding objects in their gaze, or tracking gaze shifts over time.</div>
+            <div class="demo-q">What's the weather today?</div>
+            <div class="demo-a demo-a-reject">I'm a gaze-tracking assistant and can only help with questions about where someone is looking, eye contact, fixations, and gaze patterns. Questions about weather or other topics are outside my scope. Please ask me about gaze data instead.</div>
           </div>
-          <div class="demo-divider">
-            <span>— session reloaded —</span>
-          </div>
-          <div class="demo-exchange">
-            <div class="demo-q">Load 000017</div>
-            <div class="demo-a">Profile 000017 loaded. Available data: gaze_results, tracking_summary, gaze_target_timeline.</div>
-          </div>
-          <div class="demo-exchange">
-            <div class="demo-q">How many times did the man look at the laptop?</div>
-            <div class="demo-a">The subject looked at the laptop 5 times.</div>
-          </div>
+        </div>
+      </section>
+
+      <!-- ── Children Interaction Visualization ── -->
+      <section id="children-vis" class="panel section">
+        <div class="section-head">
+          <span class="k">Setup 2 &middot; Clinical Recordings</span>
+          <h2>Example Visualization on Children Interaction Videos</h2>
+        </div>
+        <p class="lead">
+          Unlike egocentric capture, third-person recordings of standardized
+          child&ndash;clinician interactions are permitted under our IRB protocol. We
+          apply GazeAnywhere's gaze-target grounding to sessions from two clinical
+          evaluation protocols &mdash; ESCS (Early Social Communication Scales) and
+          BOSCC (Brief Observation of Social Communication Change). Driven only by
+          free-form text prompts (e.g. <em>"blue dinosaur toy," "woman with glasses,"
+          "xylophone"</em>), the underlying vision-language model performs fine-grained
+          visual-semantic alignment, precisely locating unstructured objects in
+          cluttered clinical scenes &mdash; or correctly predicting out-of-scene
+          attention shifts.
+        </p>
+        <p class="vis-legend">
+          <span class="k">Annotation key</span>
+          The head bounding box encodes where the child is looking &mdash;
+          <strong class="swatch-red">red</strong>: gaze falls outside the frame and not on
+          the interactor; <strong class="swatch-blue">blue</strong>: gaze on the interactor;
+          <strong class="swatch-green">green</strong>: gaze somewhere in the scene. The
+          <strong class="swatch-green">green dot</strong> marks the predicted gaze point, and
+          the <strong class="swatch-yellow">yellow</strong> box marks the localized gaze
+          target object.
+        </p>
+        <div class="vis-grid">
+          <figure class="vis-card">
+            <img src="./figure/escs_1.png" alt="ESCS protocol: child gaze grounded to a blue toy dinosaur" />
+            <figcaption><span class="proto">ESCS</span> &ldquo;Blue dinosaur toy&rdquo;</figcaption>
+          </figure>
+          <figure class="vis-card">
+            <img src="./figure/escs_2.png" alt="ESCS protocol: child gaze grounded to the woman with glasses" />
+            <figcaption><span class="proto">ESCS</span> &ldquo;Woman with glasses&rdquo;</figcaption>
+          </figure>
+          <figure class="vis-card">
+            <img src="./figure/boscc_1.png" alt="BOSCC protocol: child gaze grounded to a xylophone" />
+            <figcaption><span class="proto">BOSCC</span> &ldquo;Xylophone&rdquo;</figcaption>
+          </figure>
+          <figure class="vis-card">
+            <img src="./figure/boscc_2.png" alt="BOSCC protocol: child gaze predicted out of scene" />
+            <figcaption><span class="proto">BOSCC</span> Out of scene</figcaption>
+          </figure>
         </div>
       </section>
 
@@ -515,7 +606,7 @@
 
     <footer class="site-footer">
       <p>
-        GazeTrack Agent &mdash; promptable gaze intelligence for pediatric AR clinical studies.
+        GazeAgent &mdash; promptable gaze intelligence for pediatric AR clinical studies.
       </p>
     </footer>
     <script src="./main.js"></script>
