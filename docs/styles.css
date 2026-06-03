@@ -589,10 +589,10 @@ h1 {
   flex-shrink: 0;
 }
 
-.model-badge.gaze {
-  background: rgba(127, 157, 255, 0.18);
-  color: var(--accent);
-  border: 1px solid rgba(127, 157, 255, 0.3);
+.model-badge.scene {
+  background: rgba(255, 183, 77, 0.14);
+  color: #ffcb7f;
+  border: 1px solid rgba(255, 183, 77, 0.3);
 }
 
 .model-badge.seg {
@@ -601,16 +601,10 @@ h1 {
   border: 1px solid rgba(77, 240, 212, 0.3);
 }
 
-.model-badge.scene {
-  background: rgba(255, 183, 77, 0.14);
-  color: #ffcb7f;
-  border: 1px solid rgba(255, 183, 77, 0.3);
-}
-
-.model-badge.agent-badge {
-  background: rgba(200, 140, 255, 0.14);
-  color: #d4a8ff;
-  border: 1px solid rgba(200, 140, 255, 0.3);
+.model-badge.match {
+  background: rgba(255, 138, 178, 0.14);
+  color: #ff9ec0;
+  border: 1px solid rgba(255, 138, 178, 0.3);
 }
 
 .model-card-header h3 {
@@ -685,6 +679,89 @@ h1 {
 }
 
 /* ── Agent Stages ── */
+
+.pipeline-system-figure {
+  margin: 1.3rem 0 0.2rem;
+  background: #f5f7ff;
+}
+
+/* ── Children interaction visualization ── */
+.vis-legend {
+  margin: 0.2rem 0 1.1rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.vis-legend .k {
+  display: inline-block;
+  margin-right: 0.55rem;
+}
+
+.swatch-green {
+  color: #57e08a;
+}
+
+.swatch-red {
+  color: #ff6f6f;
+}
+
+.swatch-blue {
+  color: #6fa8ff;
+}
+
+.swatch-yellow {
+  color: #ffd35a;
+}
+
+.vis-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.9rem;
+  margin-top: 0.4rem;
+}
+
+.vis-card {
+  margin: 0;
+  border: 1px solid #31407a;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0a0d1a;
+}
+
+.vis-card img {
+  width: 100%;
+  display: block;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.vis-card figcaption {
+  padding: 0.55rem 0.7rem 0.72rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.vis-card .proto {
+  display: inline-block;
+  margin-right: 0.35rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 900px) {
+  .vis-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .vis-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 .agent-stages {
   display: grid;
@@ -790,6 +867,29 @@ h1 {
   line-height: 1.5;
 }
 
+.query-cat {
+  padding: 0.6rem 0.82rem;
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--accent);
+  border-radius: 10px;
+  background: rgba(10, 13, 26, 0.65);
+  margin-bottom: 0.5rem;
+}
+
+.query-cat strong {
+  display: block;
+  color: var(--text);
+  font-size: 0.9rem;
+  margin-bottom: 0.2rem;
+}
+
+.query-cat p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
 .interaction-diagram {
   display: flex;
   flex-direction: column;
@@ -846,6 +946,13 @@ h1 {
   width: 100%;
   display: block;
   object-fit: contain;
+}
+
+.hardware-figure figcaption {
+  padding: 0.5rem 0.7rem 0.6rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
 }
 
 .diagram-arrow-down {
