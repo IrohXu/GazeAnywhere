@@ -201,3 +201,11 @@ qwen3/
 *.mp4
 *.sbatch
 *.jpg
+
+# macOS DS Store
+.DS_Store
+
+# Model weights
+checkpoints/
+*.safetensors
+*.pth

@@ -18,16 +18,40 @@ except ImportError:
 
 # Global model variable
 model = None
+# Force CPU on Mac to avoid MPS NaN bugs and out-of-memory swap issues
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 def load_model(config_file, model_weights):
     global model
     if model is None:
+        import os
+        if not os.path.exists(model_weights):
+            raise gr.Error(f"Model weights not found at {model_weights}. Please download `model.safetensors` from Hugging Face (IrohXu/GazeAnywhere) and place it at this path. Note: it requires Hugging Face authentication since it's a gated repo.")
         try:
             cfg = LazyConfig.load(config_file)
+            cfg.model.device = device
             model = instantiate(cfg.model)
-            model.load_state_dict(torch.load(model_weights, weights_only=False, map_location="cpu")["model"])
-            if torch.cuda.is_available():
-                model = model.cuda()
+            model.device = torch.device(device)
+            
+            if str(model_weights).endswith('.safetensors'):
+                from safetensors.torch import load_file
+                state_dict = load_file(model_weights)
+            else:
+                state_dict = torch.load(model_weights, weights_only=False, map_location="cpu")
+            
+            if "model" in state_dict:
+                state_dict = state_dict["model"]
+                
+            # Hugging Face weights have a 'gaze_model.' prefix, remove it to match local model
+            new_state_dict = {}
+            for k, v in state_dict.items():
+                if k.startswith("gaze_model."):
+                    new_state_dict[k.replace("gaze_model.", "", 1)] = v
+                else:
+                    new_state_dict[k] = v
+                    
+            model.load_state_dict(new_state_dict, strict=False)
+            model = model.to(device)
             model.eval()
             print("Model loaded successfully.")
         except Exception as e:
@@ -54,9 +78,7 @@ def infer(image, text, config_file, model_weights, use_dark_inference=False):
         transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
     ])
     
-    img_tensor = image_transform(image).unsqueeze(0)
-    if torch.cuda.is_available():
-        img_tensor = img_tensor.cuda()
+    img_tensor = image_transform(image).unsqueeze(0).to(device)
         
     with torch.no_grad():
         gaze_heatmap_pred, inout_pred, bbox_pred = model.inference(img_tensor, [text])
@@ -64,6 +86,9 @@ def infer(image, text, config_file, model_weights, use_dark_inference=False):
         gaze_heatmap_pred = gaze_heatmap_pred.squeeze(1).cpu().detach().numpy()[0]
         inout_pred = inout_pred.cpu().detach().numpy()[0]
         bbox_pred = bbox_pred.cpu().detach().numpy()[0]
+        
+        if np.isnan(gaze_heatmap_pred).any():
+            raise gr.Error("Model produced invalid outputs (NaNs). This usually happens on Mac when the disk is completely full and MPS fails to compile shaders. Please clear some disk space!")
         
         inout = bool(inout_pred > 0.5)
         
@@ -108,8 +133,8 @@ with gr.Blocks(title="GazeAnywhere Web UI") as demo:
     
     with gr.Row():
         with gr.Column():
-            config_input = gr.Textbox(label="Config File Path", value="configs/base.py")
-            weights_input = gr.Textbox(label="Model Weights Path", value="checkpoints/model.pth")
+            config_input = gr.Textbox(label="Config File Path", value="configs/gazeanywhere_config.py")
+            weights_input = gr.Textbox(label="Model Weights Path", value="checkpoints/model.safetensors")
             image_input = gr.Image(type="pil", label="Input Image")
             text_input = gr.Textbox(label="Text Prompt", placeholder="Describe the person whose gaze you want to predict")
             dark_infer_checkbox = gr.Checkbox(label="Use Dark Inference", value=False)
