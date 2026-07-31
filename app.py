@@ -157,7 +157,7 @@ def infer(image, text, config_file, model_weights, use_dark_inference=False):
 # Create Gradio interface
 with gr.Blocks(title="GazeAnywhere") as demo:
     gr.Markdown("# GazeAnywhere: Generalizable Gaze Estimation")
-    gr.Markdown("**Original Model by:** [Xu Cao](https://github.com/IrohXu) | **License:** GazeAnywhere Custom License (Non-Commercial / Research)\n\nThis is an interactive Gradio interface for estimating gaze targets in images based on text prompts.")
+    gr.Markdown("**Original Model by:** [Xu Cao](https://github.com/IrohXu) | **License:** GazeAnywhere Custom License (Non-Commercial / Research)\n\nThis is an interactive Gradio interface for estimating gaze targets in images based on text prompts.\n*(Note: This Web UI integration was created by Antigravity, Gemini 3.1, and peer-reviewed by Steve Wong).*")
     
     with gr.Row():
         with gr.Column():
