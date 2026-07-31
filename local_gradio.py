@@ -80,13 +80,8 @@ def load_model(config_file, model_weights):
 
 def infer(image, text, config_file, model_weights, use_dark_inference=False):
     global model
-    print(f"Infer called. device={device}")
-    
     if image is None:
         raise gr.Error("Please upload an image.")
-    
-    # Ensure image is RGB (convert RGBA/P/L to RGB)
-    image = image.convert("RGB")
     if not text:
         raise gr.Error("Please enter a text prompt.")
         
@@ -104,10 +99,7 @@ def infer(image, text, config_file, model_weights, use_dark_inference=False):
     ])
     
     img_tensor = image_transform(image).unsqueeze(0).to(device)
-    print(f"Image tensor shape: {img_tensor.shape}, dtype: {img_tensor.dtype}, device: {img_tensor.device}")
-    print(f"Model device: {model.device}")
-    
-    # Run inference
+        
     with torch.no_grad():
         gaze_heatmap_pred, inout_pred, bbox_pred = model.inference(img_tensor, [text])
         
@@ -155,9 +147,9 @@ def infer(image, text, config_file, model_weights, use_dark_inference=False):
         return visualization_pred_rgb, status_text
 
 # Create Gradio interface
-with gr.Blocks(title="GazeAnywhere") as demo:
-    gr.Markdown("# GazeAnywhere: Generalizable Gaze Estimation")
-    gr.Markdown("**Original Model by:** [Xu Cao](https://github.com/IrohXu) | **License:** GazeAnywhere Custom License (Non-Commercial / Research)\n\nThis is an interactive Gradio interface for estimating gaze targets in images based on text prompts.")
+with gr.Blocks(title="GazeAnywhere Web UI") as demo:
+    gr.Markdown("# GazeAnywhere Web UI")
+    gr.Markdown("Interactive Gradio interface for local inference.")
     
     with gr.Row():
         with gr.Column():
