@@ -11,7 +11,9 @@ try:
     import detectron2
 except ImportError:
     print("detectron2 not found. Installing from github...")
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--no-build-isolation', 'git+https://github.com/facebookresearch/detectron2.git'])
+    env = os.environ.copy()
+    env["TORCH_CUDA_ARCH_LIST"] = "7.5;8.0;8.6;9.0"
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--no-build-isolation', 'git+https://github.com/facebookresearch/detectron2.git'], env=env)
 
 from detectron2.config import instantiate, LazyConfig
 import cv2
