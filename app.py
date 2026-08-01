@@ -1,8 +1,18 @@
 import gradio as gr
+import spaces
 import torch
 import numpy as np
 from PIL import Image
 from torchvision import transforms
+import os
+import sys
+import subprocess
+try:
+    import detectron2
+except ImportError:
+    print("detectron2 not found. Installing from github...")
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--no-build-isolation', 'git+https://github.com/facebookresearch/detectron2.git'])
+
 from detectron2.config import instantiate, LazyConfig
 import cv2
 import sys
@@ -18,11 +28,19 @@ except ImportError:
 
 # Global model variable
 model = None
-# Force CPU on Mac to avoid MPS NaN bugs and out-of-memory swap issues
-device = "cuda" if torch.cuda.is_available() else "cpu"
+# Evaluate device at runtime to properly detect ZeroGPU assignment
+def get_device():
+    return "cuda" if torch.cuda.is_available() else "cpu"
 
 def load_model(config_file, model_weights):
     global model
+    device = get_device()
+    
+    if model is not None and str(model.device) != device:
+        # Move model to new device if ZeroGPU just allocated one
+        model = model.to(device)
+        model.device = torch.device(device)
+        
     if model is None:
         import os
         if not os.path.exists(model_weights):
@@ -78,8 +96,10 @@ def load_model(config_file, model_weights):
             print(f"Error loading model: {e}")
             raise gr.Error(f"Error loading model: {e}")
 
+@spaces.GPU
 def infer(image, text, config_file, model_weights, use_dark_inference=False):
     global model
+    device = get_device()
     print(f"Infer called. device={device}")
     
     if image is None:
