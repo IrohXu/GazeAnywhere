@@ -87,7 +87,21 @@ python tools/inference.py \
   --save_path visualization.jpg \
   --use_dark_inference
 ```
+### Web UI (Gradio)
 
+We also provide an interactive Web UI powered by Gradio for easy, browser-based inference.
+*(Note: This Web UI integration was created by Antigravity, Gemini 3.1, and peer-reviewed by Steve Wong).*
+
+To run the UI locally:
+1. Ensure your Hugging Face Access Token is set (the app will auto-download the model weights if they are missing):
+   ```bash
+   export HF_TOKEN="your_token_here"
+   ```
+2. Launch the app:
+   ```bash
+   python app.py
+   ```
+3. Open `http://localhost:7860` in your web browser.
 <!-- ```python
 TODO
 ``` -->
@@ -96,6 +110,7 @@ TODO
 
 - [x] **[Feb 2026]** GazeAnywhere (AnyGaze) paper is accepted to CVPR 2026! 🎉
 - [x] **[Feb 2026]** Released initial inference code and environment setup.
+- [x] **[May 2026]** Launch local Gradio Web UI and interactive Hugging Face Spaces demo.
 - [x] **[Apr 2026]** Release full training, validation, and evaluation scripts.
 - [x] **[June 2026]** Release pre-trained model weights on Hugging Face.
 - [ ] **[Aug 2026]** Release the Gaze-Co benchmark for community use.
