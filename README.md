@@ -113,7 +113,7 @@ TODO
 - [x] **[May 2026]** Launch local Gradio Web UI and interactive Hugging Face Spaces demo.
 - [x] **[Apr 2026]** Release full training, validation, and evaluation scripts.
 - [x] **[June 2026]** Release pre-trained model weights on Hugging Face.
-- [ ] **[Aug 2026]** Launch local Gradio Web UI and interactive Hugging Face Spaces demo. (Implement by [Steve Wong](https://github.com/SteveWong-a), [pull](https://github.com/IrohXu/GazeAnywhere/pull/2))
+- [x] **[Aug 2026]** Launch local Gradio Web UI and interactive Hugging Face Spaces demo. (Implement by [Steve Wong](https://github.com/SteveWong-a), [pull](https://github.com/IrohXu/GazeAnywhere/pull/2))
 - [ ] **[Aug 2026]** Release the Gaze-Co benchmark for community use.
 
 ## Acknowledgement
