@@ -110,10 +110,11 @@ TODO
 
 - [x] **[Feb 2026]** GazeAnywhere (AnyGaze) paper is accepted to CVPR 2026! 🎉
 - [x] **[Feb 2026]** Released initial inference code and environment setup.
-- [ ] **[Mar 2026]** Release pre-trained model weights on Hugging Face.
-- [ ] **[Mar 2026]** Release the Gaze-Co benchmark for community use.
-- [ ] **[Apr 2026]** Release full training, validation, and evaluation scripts.
 - [x] **[May 2026]** Launch local Gradio Web UI and interactive Hugging Face Spaces demo.
+- [x] **[Apr 2026]** Release full training, validation, and evaluation scripts.
+- [x] **[June 2026]** Release pre-trained model weights on Hugging Face.
+- [ ] **[Aug 2026]** Release the Gaze-Co benchmark for community use.
+- [ ] **[Aug 2026]** Launch local Gradio Web UI and interactive Hugging Face Spaces demo.
 
 ## Acknowledgement
 
@@ -140,3 +141,4 @@ If you use GazeAnywhere or the Gaze-Co dataset in your research, please use the 
 }
 ```
 
+**Some fun fact:** This is the last project from Xu Cao by hand written code. The next phase of GazeAnywhere will be based on code agents.      
