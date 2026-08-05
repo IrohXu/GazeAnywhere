@@ -126,3 +126,4 @@ If you use GazeAnywhere or the Gaze-Co dataset in your research, please use the 
 }
 ```
 
+**Some fun fact:** This is the last project from Xu Cao by hand written code. The next phase of GazeAnywhere will be based on code agents.      
